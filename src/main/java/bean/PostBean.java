@@ -1,13 +1,23 @@
 package bean;
 
 public class PostBean {
+	private int idx;
 	private String categoryCode;
 	private String title;
 	private String contents;
 	private String urlkey;
 	private String changefleg;
 	private String priority;
-	private byte[] image;
+	private String summary;
+	private String image;
+
+	public int getIdx() {
+		return idx;
+	}
+
+	public void setIdx(int idx) {
+		this.idx = idx;
+	}
 
 	public String getCategoryCode() {
 		return categoryCode;
@@ -57,12 +67,20 @@ public class PostBean {
 		this.priority = priority;
 	}
 
-	public byte[] getImage() {
+	public String getImage() {
 		return image;
 	}
 
-	public void setImage(byte[] image) {
+	public void setImage(String image) {
 		this.image = image;
+	}
+
+	public String getSummary() {
+		return summary;
+	}
+
+	public void setSummary(String summary) {
+		this.summary = summary;
 	}
 
 }

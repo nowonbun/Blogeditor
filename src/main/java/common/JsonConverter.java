@@ -256,39 +256,39 @@ public class JsonConverter {
 		}
 	}
 
-	public static boolean JsonStringIsEmptyOrNull(JsonObject jsonobj, String key) {
-		return !JsonIsKey(jsonobj, key) || Util.StringIsEmptyOrNull(jsonobj.getString(key));
+	public static boolean JsonStringIsEmptyOrNull(JsonObject obj, String key) {
+		return !JsonIsKey(obj, key) || Util.StringIsEmptyOrNull(obj.getString(key));
 	}
 
-	public static boolean JsonIsKey(JsonObject jsonobj, String key) {
-		return jsonobj.keySet().contains(key) && !jsonobj.isNull(key);
+	public static boolean JsonIsKey(JsonObject obj, String key) {
+		return obj.keySet().contains(key) && !obj.isNull(key);
 	}
 
-	public static String JsonString(JsonObject jsonobj, String key) {
-		if (JsonIsKey(jsonobj, key)) {
-			return jsonobj.getString(key);
+	public static String JsonString(JsonObject obj, String key) {
+		if (JsonIsKey(obj, key)) {
+			return obj.getString(key);
 		}
 		return null;
 	}
 
-	public static boolean JsonBoolean(JsonObject jsonobj, String key) {
-		if (JsonIsKey(jsonobj, key)) {
-			return jsonobj.getBoolean(key);
+	public static boolean JsonBoolean(JsonObject obj, String key) {
+		if (JsonIsKey(obj, key)) {
+			return obj.getBoolean(key);
 		}
 		return false;
 	}
 
-	public static byte[] JsonBytes(JsonObject jsonobj, String key) {
-		String ret = JsonString(jsonobj, key);
+	public static byte[] JsonBytes(JsonObject obj, String key) {
+		String ret = JsonString(obj, key);
 		if (ret == null) {
 			return null;
 		}
 		return ret.getBytes();
 	}
 
-	public static int JsonInteger(JsonObject jsonobj, String key) {
-		if (JsonIsKey(jsonobj, key)) {
-			return jsonobj.getInt(key);
+	public static int JsonInteger(JsonObject obj, String key) {
+		if (JsonIsKey(obj, key)) {
+			return obj.getInt(key);
 		}
 		return 0;
 	}

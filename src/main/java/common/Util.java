@@ -14,7 +14,7 @@ import common.interfaces.LambdaExpression;
 
 public class Util {
 	public static String createGUID() {
-		return UUID.randomUUID().toString();
+		return UUID.randomUUID().toString().replaceAll("-", "");
 	}
 
 	public static <T> T searchArray(T[] array, LambdaExpression<T, Boolean> condition) {

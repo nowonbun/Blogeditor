@@ -2,19 +2,21 @@ package ajax;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import bean.PostBean;
 import common.FactoryDao;
 import common.IController;
@@ -31,12 +33,13 @@ public class PostAjax extends IController {
 	private static final long serialVersionUID = 1L;
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
-	@RequestMapping(value = "/insertPost.ajax")
+	@RequestMapping(value = "/insertPost.ajax", produces = "application/text; charset=utf8")
 	public void insertPost(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
-		String postData = getPostData(req);
+		// res.setContentType("text/html;charset=UTF-8");
+		// res.setHeader("Access-Control-Allow-Origin", "*");
 		int changeFlag = 5;
 		int priority = 5;
-		PostBean bean = JsonConverter.parseObject(postData, (obj) -> {
+		PostBean bean = JsonConverter.parseObject(getPostData(req), (obj) -> {
 			PostBean ret = new PostBean();
 			ret.setCategoryCode(JsonConverter.JsonString(obj, "categoryCode"));
 			ret.setTitle(JsonConverter.JsonString(obj, "title"));
@@ -44,7 +47,8 @@ public class PostAjax extends IController {
 			ret.setUrlkey(JsonConverter.JsonString(obj, "urlkey"));
 			ret.setChangefleg(JsonConverter.JsonString(obj, "changefleg"));
 			ret.setPriority(JsonConverter.JsonString(obj, "priority"));
-			ret.setImage(JsonConverter.JsonBytes(obj, "image"));
+			ret.setImage(new String(JsonConverter.JsonBytes(obj, "image")));
+			ret.setSummary(JsonConverter.JsonString(obj, "summary"));
 			return ret;
 		});
 		if (Util.StringIsEmptyOrNull(bean.getCategoryCode())) {
@@ -92,6 +96,12 @@ public class PostAjax extends IController {
 			getPrinter(res).println("categoryCode mapping error");
 			return;
 		}
+		if (Util.StringEquals("01", bean.getCategoryCode())) {
+			for (Post p : FactoryDao.getDao(PostDao.class).getPostsByCategory(post.getCategory())) {
+				p.setIsdeleted(true);
+				FactoryDao.getDao(PostDao.class).update(p);
+			}
+		}
 		post.setTitle(bean.getTitle());
 		String filepath = writeFile(PropertyMap.getInstance().getProperty("config", "file_path_root"), bean.getUrlkey(), bean.getContents());
 		post.setFilepath(filepath);
@@ -101,6 +111,34 @@ public class PostAjax extends IController {
 		post.setCreatedated(new Date());
 		post.setLastUpdated(new Date());
 		post.setGuid(bean.getUrlkey());
+		post.setSummary(bean.getSummary());
+		post.setIsdeleted(false);
+		post.setImage(bean.getImage().getBytes());
+		FactoryDao.getDao(PostDao.class).create(post);
+
+		getPrinter(res).println("Post was created");
+	}
+
+	@RequestMapping(value = "/getPost.ajax")
+	public void getPost(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
+		PostBean bean = JsonConverter.parseObject(getPostData(req), (obj) -> {
+			PostBean ret = new PostBean();
+			ret.setCategoryCode(JsonConverter.JsonString(obj, "categoryCode"));
+			ret.setIdx(JsonConverter.JsonInteger(obj, "idx"));
+			return ret;
+		});
+		if (Util.StringEquals("01", bean.getCategoryCode())) {
+			List<Post> posts = FactoryDao.getDao(PostDao.class).getPostsByCategory(FactoryDao.getDao(CategoryDao.class).getCategory(bean.getCategoryCode()));
+			if (posts.size() > 0) {
+				bean.setTitle(posts.get(0).getTitle());
+				bean.setContents(readFile(posts.get(0).getFilepath()));
+				bean.setUrlkey(posts.get(0).getGuid());
+				bean.setPriority(Integer.toString(posts.get(0).getPriority()));
+				bean.setChangefleg(Integer.toString(posts.get(0).getChangefreg()));
+				bean.setImage(new String(posts.get(0).getImage()));
+			}
+		}
+		getPrinter(res).println(JsonConverter.create(bean));
 	}
 
 	private String getPostData(HttpServletRequest req) {
@@ -111,9 +149,28 @@ public class PostAjax extends IController {
 		}
 	}
 
-	private String writeFile(String fielpath, String urlkey, String contents) {
-		Date date = new Date();
-		File file = new File(fielpath + File.pathSeparator + urlkey + sdf.format(new Date()) + ".post");
+	private String readFile(String filepath) {
+		File file = new File(filepath);
+		if (!file.exists()) {
+			return null;
+		}
+		try (FileInputStream input = new FileInputStream(file)) {
+			byte[] data = new byte[(int) file.length()];
+			input.read(data);
+			return new String(data, "UTF-8");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	private String writeFile(String filepath, String urlkey, String contents) {
+		File dir = new File(filepath);
+		if (!dir.exists()) {
+			dir.mkdirs();
+		}
+
+		File file = new File(dir.getAbsolutePath() + File.separator + urlkey + sdf.format(new Date()) + ".post");
 		if (file.exists()) {
 			return null;
 		}

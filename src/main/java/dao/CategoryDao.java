@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import common.Dao;
+import common.Util;
 import model.Category;
 
 public class CategoryDao extends Dao<Category> {
@@ -46,7 +47,7 @@ public class CategoryDao extends Dao<Category> {
 
 	public Category getCategory(String categoryCode) {
 		try {
-			return selectAll().stream().filter(x -> x.getCategoryCode() == categoryCode).findFirst().get();
+			return selectAll().stream().filter(x -> Util.StringEquals(categoryCode, x.getCategoryCode())).findFirst().get();
 		} catch (NoSuchElementException e) {
 			return null;
 		}

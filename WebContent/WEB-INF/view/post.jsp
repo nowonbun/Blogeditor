@@ -1,4 +1,8 @@
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%
+	request.setCharacterEncoding("utf-8");
+	request.setCharacterEncoding("utf-8");
+%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
@@ -82,6 +86,27 @@
 		})({
 			image : null,
 			onLoad : function() {
+				var param = {};
+				if ($("#category_code").val() === '01') {
+					param = {
+						categoryCode : '01'
+					};
+				}
+				$.ajax({
+					url : "getPost.ajax",
+					type : "POST",
+					dataType : "json",
+					data : JSON.stringify(param),
+					success : function(data) {
+						console.log(data);
+					},
+					error : function(xhr, error, thrown) {
+						toastr.error('get error.');
+						console.log(xhr);
+						console.log(error);
+						console.log(thrown);
+					}
+				});
 				$('#summernote').summernote({
 					height : 500
 				});
@@ -103,18 +128,18 @@
 						toastr.error('No empty of category_code.');
 						return;
 					}
-					
+
 					if ($.trim($("#title").val()) === "") {
 						toastr.error('No empty of title.');
 						return;
 					}
-					
+
 					var contents = $("#summernote").summernote('code');
 					if ($.trim(contents) === "") {
 						toastr.error('No empty of contents.');
 						return;
 					}
-					
+
 					if (_.image == null) {
 						toastr.error('No empty of iamge.');
 						return;
@@ -127,16 +152,16 @@
 						urlkey : $("#urlkey").val(),
 						changefleg : $("#changefleg").val(),
 						priority : $("#priority").val(),
-						summary: $(".note-editable")[0].outerText.replace(/\n\n/gi,"\n"),
+						summary : $(".note-editable")[0].outerText.replace(/\n\n/gi, "\n"),
 						image : _.image
 					};
 					$.ajax({
 						url : "insertPost.ajax",
 						type : "POST",
-						dataType : "json",
+						//dataType : "json",
 						data : JSON.stringify(data),
-						complete : function() {
-							toastr.info('Data insert OK!');
+						success : function(data) {
+							toastr.info(data);
 						},
 						error : function(xhr, error, thrown) {
 							toastr.error('insert error.');
