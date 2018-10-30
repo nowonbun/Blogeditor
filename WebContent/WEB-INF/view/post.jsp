@@ -1,8 +1,4 @@
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%
-	request.setCharacterEncoding("utf-8");
-	request.setCharacterEncoding("utf-8");
-%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
@@ -10,7 +6,7 @@
 <jsp:include page="./share/pagetop.jsp"></jsp:include>
 </head>
 <body>
-	<div class="container wow fadeIn animated" style="visibility: visible; animation-name: fadeIn;">
+	<div class="container wow fadeIn animated" style="visibility: visible; animation-name: fadeIn;" style="min-width: 450px;">
 		<jsp:include page="./share/header.jsp"></jsp:include>
 		<main class="mt-5">
 		<div style="text-align: right">
@@ -30,24 +26,32 @@
 							</textarea>
 							</div>
 							<div class="mt-2 row">
-								<div class="col-3">
-									<input class="form-control form-control-sm" type="text" id="urlkey" placeholder="urlkey">
+								<div class="col-4">
+									<div class="md-form">
+										<input type="text" id="urlkey" class="form-control">
+										<label for="urlkey">url unique key</label>
+									</div>
 								</div>
-								<div class="col-2">
-									<input class="form-control form-control-sm" type="number" id="changefleg" placeholder="CHANGEFREG">
+								<div class="col-4">
+									<div class="md-form">
+										<input type="number" id="changefleg" class="form-control">
+										<label for="changefleg">change fleg</label>
+									</div>
 								</div>
-								<div class="col-2">
-									<input class="form-control form-control-sm" type="number" id="priority" placeholder="PRIORITY">
+								<div class="col-4">
+									<div class="md-form">
+										<input type="number" id="priority" class="form-control">
+										<label for="priority">priority</label>
+									</div>
 								</div>
-								<div class="col-5">
-									<div class="row">
-										<div class="col-8">
-											<input class="form-control form-control-sm" type="text" id="image" placeholder="IMAGE" readonly>
-										</div>
-										<div class="file-field col-4">
-											<div class="btn btn-primary btn-sm float-left" style="margin: 0px;">
-												<span>Choose</span> <input type="file" id="img_file" accept="image/*" onchange="$('#image').val($(this).val())">
-											</div>
+							</div>
+							<div class="row">
+								<div class="col-12">
+									<img src="#" id="imagepanel" class="mt-3 mb-3" style="width:340px;height:170px;"><br />
+									<input class="form-control form-control-sm" type="text" id="image" placeholder="IMAGE" readonly style="width: 250px;display: inline;">
+									<div class="file-field" style="display: inline;">
+										<div class="btn btn-primary btn-sm float-left" style="margin: 0px;">
+											<span>Choose</span> <input type="file" id="img_file" accept="image/*" onchange="$('#image').val($(this).val())">
 										</div>
 									</div>
 								</div>
@@ -86,33 +90,10 @@
 		})({
 			image : null,
 			onLoad : function() {
-				var param = {};
-				if ($("#category_code").val() === '01') {
-					param = {
-						categoryCode : '01'
-					};
-				}
-				$.ajax({
-					url : "getPost.ajax",
-					type : "POST",
-					dataType : "json",
-					data : JSON.stringify(param),
-					success : function(data) {
-						console.log(data);
-					},
-					error : function(xhr, error, thrown) {
-						toastr.error('get error.');
-						console.log(xhr);
-						console.log(error);
-						console.log(thrown);
-					}
-				});
 				$('#summernote').summernote({
 					height : 500
 				});
-				$(".note-popover.popover").each(function() {
-					$(this).hide();
-				});
+				_.readData();
 				$(document).off("change", '.file-field input[type="file"]').on("change", '.file-field input[type="file"]', function() {
 					var file = $("#img_file")[0].files[0];
 					if (file.size > 1024) {
@@ -120,7 +101,7 @@
 					}
 					_.readFile(file, function(node) {
 						_.image = node.binary;
-
+						$("#imagepanel").prop("src",_.image);
 					});
 				});
 				$("#createPost").on("click", function() {
@@ -158,10 +139,11 @@
 					$.ajax({
 						url : "insertPost.ajax",
 						type : "POST",
-						//dataType : "json",
+						dataType : "json",
 						data : JSON.stringify(data),
 						success : function(data) {
-							toastr.info(data);
+							_.notification(data);
+							_.readData();
 						},
 						error : function(xhr, error, thrown) {
 							toastr.error('insert error.');
@@ -171,6 +153,54 @@
 						}
 					});
 				});
+			},
+			readData: function(){
+				var param = {};
+				if ($("#category_code").val() === '01') {
+					param = {
+						categoryCode : '01'
+					};
+				}
+				$.ajax({
+					url : "getPost.ajax",
+					type : "POST",
+					dataType : "json",
+					data : JSON.stringify(param),
+					success : function(data) {
+						console.log(data);
+						$("#title").val(data.title);
+						$('#summernote').summernote('code',data.contents);
+						$("#urlkey").val(data.urlkey);
+						$("#urlkey").trigger("change");
+						$("#changefleg").val(data.changefleg);
+						$("#changefleg").trigger("change");
+						$("#priority").val(data.priority);
+						$("#priority").trigger("change");
+						_.image = data.image;
+						$("#imagepanel").prop("src",_.image);
+					},
+					error : function(xhr, error, thrown) {
+						toastr.error('get error.');
+						console.log(xhr);
+						console.log(error);
+						console.log(thrown);
+					}
+				});
+				
+				$(".note-popover.popover").each(function() {
+					$(this).hide();
+				});
+			},
+			notification: function(json){
+				if(json.type === "W"){
+					toastr.warning(json.message);
+				} else if (json.type === "I") {
+					toastr.info(json.message);
+				} else if (json.type === "S"){
+					toastr.success(json.message);
+				} else {
+					toastr.error(json.message);
+				}
 			},
 			readFile : function(file, cb) {
 				node = new function() {

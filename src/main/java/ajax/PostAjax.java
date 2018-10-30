@@ -5,18 +5,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import bean.AjaxReturnBean;
 import bean.PostBean;
 import common.FactoryDao;
 import common.IController;
@@ -35,8 +34,6 @@ public class PostAjax extends IController {
 
 	@RequestMapping(value = "/insertPost.ajax", produces = "application/text; charset=utf8")
 	public void insertPost(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
-		// res.setContentType("text/html;charset=UTF-8");
-		// res.setHeader("Access-Control-Allow-Origin", "*");
 		int changeFlag = 5;
 		int priority = 5;
 		PostBean bean = JsonConverter.parseObject(getPostData(req), (obj) -> {
@@ -86,14 +83,14 @@ public class PostAjax extends IController {
 			}
 		}
 		if (bean.getImage() == null) {
-			getPrinter(res).println("image error");
+			AjaxReturn(res, AjaxReturnBean.ERROR, "Please choice the image.");
 			return;
 		}
 
 		Post post = new Post();
 		post.setCategory(FactoryDao.getDao(CategoryDao.class).getCategory(bean.getCategoryCode()));
 		if (post.getCategory() == null) {
-			getPrinter(res).println("categoryCode mapping error");
+			AjaxReturn(res, AjaxReturnBean.ERROR, "CategoryCode mapping error.");
 			return;
 		}
 		if (Util.StringEquals("01", bean.getCategoryCode())) {
@@ -116,7 +113,14 @@ public class PostAjax extends IController {
 		post.setImage(bean.getImage().getBytes());
 		FactoryDao.getDao(PostDao.class).create(post);
 
-		getPrinter(res).println("Post was created");
+		AjaxReturn(res, AjaxReturnBean.SUCCESS, "The post is created.");
+	}
+
+	private void AjaxReturn(HttpServletResponse res, String type, String message) {
+		AjaxReturnBean bean = new AjaxReturnBean();
+		bean.setType(type);
+		bean.setMessage(message);
+		getPrinter(res).println(JsonConverter.create(bean));
 	}
 
 	@RequestMapping(value = "/getPost.ajax")
