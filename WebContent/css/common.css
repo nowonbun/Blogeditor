@@ -85,12 +85,17 @@ body {
 	color: #ffffff !important;
 }
 
-.nav-item a:active {
-	background: inherit;
+.nav-item a.active {
+	color: black!important;
+    font-weight: 800;
 }
 
 .nav-item a:hover {
 	text-shadow: 0px 4.2px 4px rgba(0, 0, 0, 0.5), 0px 6.4px 8px rgba(0, 0, 0, 0.5), 0px 9.6px 12px rgba(0, 0, 0, 0.5);
+}
+
+.nav-item a.acvite {
+	box-shadow: 0px 1.0px 1px 1.0px rgba(0, 0, 0, 0.1), 0px 1.0px 2px 1.0px rgba(0, 0, 0, 0.1), 0px 1.0px 3px 1.0px rgba(0, 0, 0, 0.1);
 }
 
 .list-title {

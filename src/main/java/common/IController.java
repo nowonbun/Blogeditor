@@ -103,6 +103,7 @@ public abstract class IController extends HttpServlet {
 			menuitem.add(item);
 			item.setCategoryHref(request.getServletContext().getContextPath() + m.getUrl());
 			item.setCategoryText(m.getCategoryName());
+			item.setCategoryCode(m.getCategoryCode());
 		}
 		modelmap.addAttribute("menu", menuitem);
 	}

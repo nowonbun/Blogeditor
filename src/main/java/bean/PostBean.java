@@ -1,7 +1,7 @@
 package bean;
 
 public class PostBean {
-	private int idx;
+	private String idx;
 	private String categoryCode;
 	private String title;
 	private String contents;
@@ -11,11 +11,11 @@ public class PostBean {
 	private String summary;
 	private String image;
 
-	public int getIdx() {
-		return idx;
+	public String getIdx() {
+		return this.idx;
 	}
 
-	public void setIdx(int idx) {
+	public void setIdx(String idx) {
 		this.idx = idx;
 	}
 

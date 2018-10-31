@@ -14,7 +14,6 @@ import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import bean.AjaxReturnBean;
 import bean.PostBean;
 import common.FactoryDao;
@@ -83,14 +82,14 @@ public class PostAjax extends IController {
 			}
 		}
 		if (bean.getImage() == null) {
-			AjaxReturn(res, AjaxReturnBean.ERROR, "Please choice the image.");
+			AjaxReturn(res, AjaxReturnBean.ERROR, "Please choice the image.", -1);
 			return;
 		}
 
 		Post post = new Post();
 		post.setCategory(FactoryDao.getDao(CategoryDao.class).getCategory(bean.getCategoryCode()));
 		if (post.getCategory() == null) {
-			AjaxReturn(res, AjaxReturnBean.ERROR, "CategoryCode mapping error.");
+			AjaxReturn(res, AjaxReturnBean.ERROR, "CategoryCode mapping error.", -1);
 			return;
 		}
 		if (Util.StringEquals("01", bean.getCategoryCode())) {
@@ -113,13 +112,14 @@ public class PostAjax extends IController {
 		post.setImage(bean.getImage().getBytes());
 		FactoryDao.getDao(PostDao.class).create(post);
 
-		AjaxReturn(res, AjaxReturnBean.SUCCESS, "The post is created.");
+		AjaxReturn(res, AjaxReturnBean.SUCCESS, "The post is created.", post.getIdx());
 	}
 
-	private void AjaxReturn(HttpServletResponse res, String type, String message) {
+	private void AjaxReturn(HttpServletResponse res, String type, String message, int postCode) {
 		AjaxReturnBean bean = new AjaxReturnBean();
 		bean.setType(type);
 		bean.setMessage(message);
+		bean.setPostCode(postCode);
 		getPrinter(res).println(JsonConverter.create(bean));
 	}
 
@@ -128,19 +128,41 @@ public class PostAjax extends IController {
 		PostBean bean = JsonConverter.parseObject(getPostData(req), (obj) -> {
 			PostBean ret = new PostBean();
 			ret.setCategoryCode(JsonConverter.JsonString(obj, "categoryCode"));
-			ret.setIdx(JsonConverter.JsonInteger(obj, "idx"));
+			ret.setIdx(JsonConverter.JsonString(obj, "postCode"));
 			return ret;
 		});
 		if (Util.StringEquals("01", bean.getCategoryCode())) {
 			List<Post> posts = FactoryDao.getDao(PostDao.class).getPostsByCategory(FactoryDao.getDao(CategoryDao.class).getCategory(bean.getCategoryCode()));
 			if (posts.size() > 0) {
+				bean.setIdx(Integer.toString(posts.get(0).getIdx()));
 				bean.setTitle(posts.get(0).getTitle());
 				bean.setContents(readFile(posts.get(0).getFilepath()));
 				bean.setUrlkey(posts.get(0).getGuid());
 				bean.setPriority(Integer.toString(posts.get(0).getPriority()));
 				bean.setChangefleg(Integer.toString(posts.get(0).getChangefreg()));
 				bean.setImage(new String(posts.get(0).getImage()));
+			} else {
+				bean.setIdx("");
 			}
+		} else if (!Util.StringIsEmptyOrNull(bean.getIdx())) {
+			try {
+				int idx = Integer.parseInt(bean.getIdx());
+				Post post = FactoryDao.getDao(PostDao.class).getPostsByIdx(idx);
+				if (post != null) {
+					bean.setIdx(Integer.toString(post.getIdx()));
+					bean.setTitle(post.getTitle());
+					bean.setContents(readFile(post.getFilepath()));
+					bean.setUrlkey(post.getGuid());
+					bean.setPriority(Integer.toString(post.getPriority()));
+					bean.setChangefleg(Integer.toString(post.getChangefreg()));
+					bean.setImage(new String(post.getImage()));
+				}
+			} catch (Throwable e) {
+				e.printStackTrace();
+				bean.setIdx("");
+			}
+		} else {
+			bean.setIdx("");
 		}
 		getPrinter(res).println(JsonConverter.create(bean));
 	}

@@ -14,45 +14,51 @@ public class List extends IController {
 
 	private static final long serialVersionUID = 1L;
 
-	@RequestMapping(value = "/CodingNodeList.html")
-	public String codingNode(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
-		super.initMenu(modelmap, req);
-		modelmap.addAttribute("listTitle", "코딩 노트 리스트");
-		return "list";
-	}
-
 	@RequestMapping(value = "/DialyList.html")
 	protected String dialy(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
 		super.initMenu(modelmap, req);
-		modelmap.addAttribute("listTitle", "개발 일기 리스트");
+		modelmap.addAttribute("category_code", "02");
+		modelmap.addAttribute("list_title", "개발 일기 리스트");
 		return "list";
 	}
 
 	@RequestMapping(value = "/ExperienceList.html")
 	protected String experience(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
 		super.initMenu(modelmap, req);
-		modelmap.addAttribute("listTitle", "개발 경험 리스트");
-		return "list";
-	}
-
-	@RequestMapping(value = "/FavoritesList.html")
-	protected String favorites(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
-		super.initMenu(modelmap, req);
-		modelmap.addAttribute("listTitle", "즐겨 찾기 리스트");
-		return "list";
-	}
-
-	@RequestMapping(value = "/JapanLifeList.html")
-	public String japanLife(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
-		super.initMenu(modelmap, req);
-		modelmap.addAttribute("listTitle", "일본 생활 리스트");
+		modelmap.addAttribute("category_code", "03");
+		modelmap.addAttribute("list_title", "개발 경험 리스트");
 		return "list";
 	}
 
 	@RequestMapping(value = "/KoreanLifeList.html")
 	public String koreanLife(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
 		super.initMenu(modelmap, req);
-		modelmap.addAttribute("listTitle", "한국 생활 리스트");
+		modelmap.addAttribute("category_code", "04");
+		modelmap.addAttribute("list_title", "한국 생활 리스트");
+		return "list";
+	}
+
+	@RequestMapping(value = "/JapanLifeList.html")
+	public String japanLife(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
+		super.initMenu(modelmap, req);
+		modelmap.addAttribute("category_code", "05");
+		modelmap.addAttribute("list_title", "일본 생활 리스트");
+		return "list";
+	}
+
+	@RequestMapping(value = "/CodingNodeList.html")
+	public String codingNode(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
+		super.initMenu(modelmap, req);
+		modelmap.addAttribute("category_code", "06");
+		modelmap.addAttribute("list_title", "코딩 노트 리스트");
+		return "list";
+	}
+
+	@RequestMapping(value = "/FavoritesList.html")
+	protected String favorites(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
+		super.initMenu(modelmap, req);
+		modelmap.addAttribute("category_code", "07");
+		modelmap.addAttribute("list_title", "즐겨 찾기 리스트");
 		return "list";
 	}
 }

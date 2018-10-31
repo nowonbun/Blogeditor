@@ -2,6 +2,7 @@ package dao;
 
 import java.util.List;
 
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
 import common.Dao;
@@ -30,6 +31,19 @@ public class PostDao extends Dao<Post> {
 			Query query = em.createQuery(qy);
 			query.setParameter("category", category);
 			return (List<Post>) query.getResultList();
+		});
+	}
+
+	public Post getPostsByIdx(int idx) {
+		return transaction((em) -> {
+			String qy = "SELECT p FROM Post p WHERE p.idx = :idx and p.isdeleted = false";
+			Query query = em.createQuery(qy);
+			query.setParameter("idx", idx);
+			try {
+				return (Post) query.getSingleResult();
+			} catch (NoResultException e) {
+				return null;
+			}
 		});
 	}
 }
