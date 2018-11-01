@@ -86,8 +86,8 @@ body {
 }
 
 .nav-item a.active {
-	color: black!important;
-    font-weight: 800;
+	color: black !important;
+	font-weight: 800;
 }
 
 .nav-item a:hover {
@@ -100,4 +100,22 @@ body {
 
 .list-title {
 	text-align: center;
+}
+
+.summary-image {
+	width: 340px;
+	height: 170px;
+}
+
+.my-list-summary{
+	min-height: 80px;
+    max-height: 80px;
+    margin: 0px;
+}
+
+.no-list{
+	text-align: center;
+    font-size: 13pt;
+    padding-top: 200px;
+    padding-bottom: 200px;
 }

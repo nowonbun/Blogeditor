@@ -1,4 +1,5 @@
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,42 +19,46 @@
 					<button type="button" class="btn btn-md btn-primary" id="writePost">Write Post</button>
 				</div>
 				<hr class="mb-3 mt-3">
-				<!--Grid row-->
-				<div class="row wow fadeIn">
-					<!--Grid column-->
-					<div class="col-12">
-						<h3 class="mb-3 font-weight-bold dark-grey-text">
-							<strong>MDB Quick Start</strong>
-						</h3>
-						<p class="grey-text">Get started with MDBootstrap, the world's most popular Material Design framework for building responsive,mobile-first sites.</p>
-						<a href="https://www.youtube.com/watch?v=cXTThxoywNQ" target="_blank" class="btn btn-default btn-md">Go view<i class="fa fa-play ml-2"></i>
-						</a>
-					</div>
-					<!--Grid column-->
-				</div>
-				<!--Grid row-->
-				<hr class="mb-3 mt-3">
-				<!--Grid row-->
-				<div class="row mt-3 wow fadeIn">
-					<div class="col-lg-5 col-xl-4 mb-4">
-						<div class="view overlay rounded z-depth-1">
-							<img src="https://mdbootstrap.com/wp-content/uploads/2017/11/brandflow-tutorial-fb.jpg" class="img-fluid" alt=""> <a href="https://mdbootstrap.com/automated-app-start/" target="_blank">
-								<div class="mask rgba-white-slight"></div>
-							</a>
+				<c:forEach items="${list_item}" var="item">
+					<!--Grid row-->
+					<div class="row mt-3 wow fadeIn">
+						<div class="col-lg-5 col-xl-4 mb-4">
+							<div class="view overlay rounded z-depth-1">
+								<img src="${item.image}" class="img-fluid summary-image" alt="${item.title}_image"> 
+									<a href="./?category=${category_code}&post=${item.idx}">
+									<div class="mask rgba-white-slight"></div>
+								</a>
+							</div>
+						</div>
+						<div class="col-lg-7 col-xl-7 ml-xl-4 mb-4">
+							<h3 class="mb-3 font-weight-bold dark-grey-text">
+								<strong>${item.title}</strong>
+							</h3>
+							<p class="grey-text my-list-summary">${item.summary}</p>
+							<div style="text-align:right;">
+								<a href="./?category=${category_code}&post=${item.idx}" class="btn btn-primary btn-sm">Go read
+									 <i class="fa fa-play ml-2"></i>
+								</a>
+							</div>
 						</div>
 					</div>
-					<div class="col-lg-7 col-xl-7 ml-xl-4 mb-4">
-						<h3 class="mb-3 font-weight-bold dark-grey-text">
-							<strong>Bootstrap Automation</strong>
-						</h3>
-						<p class="grey-text">Learn how to create a smart website which learns your user and reacts properly to his behavior.</p>
-						<a href="https://mdbootstrap.com/automated-app-start/" target="_blank" class="btn btn-primary btn-md">Start tutorial <i class="fa fa-play ml-2"></i>
-						</a>
+					<hr class="mb-3 mt-3">
+				</c:forEach>
+				<c:if test="${list_count eq 0}">
+					<!--Grid row-->
+					<div class="row wow fadeIn">
+						<!--Grid column-->
+						<div class="col-12">
+							<h3 class="mb-3 font-weight-bold dark-grey-text no-list" style="text-align:center;">
+								등록된 글이 없습니다.
+							</h3>
+						</div>
+						<!--Grid column-->
 					</div>
-				</div>
-				<hr class="mb-3 mt-3">
-
-				<nav class="d-flex justify-content-center wow fadeIn">
+					<!--Grid row-->
+					<hr class="mb-3 mt-3">
+				</c:if>
+				<!-- nav class="d-flex justify-content-center wow fadeIn">
 					<ul class="pagination pg-blue">
 						<li class="page-item disabled"><a class="page-link" href="#" aria-label="Previous"> <span aria-hidden="true">&laquo;</span> <span class="sr-only">Previous</span>
 						</a></li>
@@ -66,7 +71,7 @@
 						<li class="page-item"><a class="page-link" href="#" aria-label="Next"> <span aria-hidden="true">&raquo;</span> <span class="sr-only">Next</span>
 						</a></li>
 					</ul>
-				</nav>
+				</nav-->
 			</section>
 		</div>
 		</main>

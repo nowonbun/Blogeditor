@@ -10,7 +10,8 @@
 		<jsp:include page="./share/header.jsp"></jsp:include>
 		<main class="mt-5">
 		<div style="text-align: right">
-			<a class="btn btn-primary btn-sm" role="button" id="createPost">작성하기</a> <a class="btn btn-primary btn-sm" role="button" id="modifyPost">수정하기</a>
+			<a class="btn btn-primary btn-sm" role="button" id="createPost">작성하기</a> 
+			<a class="btn btn-primary btn-sm" role="button" id="modifyPost">수정하기</a>
 		</div>
 		<div class="row mb-3">
 			<div class="col-12 d-flex align-items-stretch">
@@ -43,7 +44,7 @@
 							</div>
 							<div class="row">
 								<div class="col-12">
-									<img src="#" id="imagepanel" class="mt-3 mb-3" style="width: 340px; height: 170px;"><br /> <input class="form-control form-control-sm" type="text" id="image" placeholder="IMAGE"
+									<img src="#" id="imagepanel" class="mt-3 mb-3 summary-image"><br /> <input class="form-control form-control-sm" type="text" id="image" placeholder="IMAGE"
 										readonly style="width: 250px; display: inline;">
 									<div class="file-field" style="display: inline;">
 										<div class="btn btn-primary btn-sm float-left" style="margin: 0px;">
@@ -177,11 +178,11 @@
 					idx : $("#post_code").val(),
 					categoryCode : $("#category_code").val(),
 					title : $("#title").val(),
-					contents : contents,
+					contents : $("#summernote").summernote("code"),
 					urlkey : $("#urlkey").val(),
 					changefleg : $("#changefleg").val(),
 					priority : $("#priority").val(),
-					summary : $(".note-editable")[0].outerText.replace(/\n\n/gi, "\n"),
+					summary : $(".note-editable")[0].outerText.replace(/\n\n/gi, "<br />"),
 					image : _.image
 				};
 			},
@@ -196,7 +197,8 @@
 					dataType : "json",
 					data : JSON.stringify(param),
 					success : function(data) {
-						if (data.idx !== "") {
+						console.log(data);
+						if (data.idx !== "" && Number(data.idx) > 0) {
 							$("#post_code").val(data.idx);
 							$("#title").val(data.title);
 							$("#summernote").summernote("code", data.contents);
