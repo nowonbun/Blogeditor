@@ -10,8 +10,9 @@
 		<jsp:include page="./share/header.jsp"></jsp:include>
 		<main class="mt-5">
 		<div style="text-align: right">
-			<a class="btn btn-primary btn-sm" role="button" id="createPost">작성하기</a> 
-			<a class="btn btn-primary btn-sm" role="button" id="modifyPost">수정하기</a>
+			<a class="btn btn-primary btn-sm" role="button" id="createPost" style="display:none;">작성하기</a> 
+			<a class="btn btn-primary btn-sm" role="button" id="modifyPost" style="display:none;">수정하기</a>
+			<a class="btn btn-primary btn-sm" role="button" id="deletePost" style="display:none;">삭제하기</a>
 		</div>
 		<div class="row mb-3">
 			<div class="col-12 d-flex align-items-stretch">
@@ -43,14 +44,20 @@
 								</div>
 							</div>
 							<div class="row">
-								<div class="col-12">
-									<img src="#" id="imagepanel" class="mt-3 mb-3 summary-image"><br /> <input class="form-control form-control-sm" type="text" id="image" placeholder="IMAGE"
+								<div class="col-md-12 col-lg-5 mb-2">
+									<img src="#" id="imagepanel" class="mt-3 mb-3 summary-image img-fluid"><br /> <input class="form-control form-control-sm" type="text" id="image" placeholder="IMAGE"
 										readonly style="width: 250px; display: inline;">
 									<div class="file-field" style="display: inline;">
 										<div class="btn btn-primary btn-sm float-left" style="margin: 0px;">
 											<span>Choose</span> <input type="file" id="img_file" accept="image/*" onchange="$('#image').val($(this).val())">
 										</div>
 									</div>
+								</div>
+								<div class="col-md-12 col-lg-7 mb-2">
+									<div style="text-align:right;">
+										<a class="btn btn-primary btn-sm" role="button" id="getSummary">서머리 가져오기</a>
+									</div>
+									<textarea id="summaryArea" style="width:100%;height:80%;resize: none;"></textarea>
 								</div>
 							</div>
 						</form>
@@ -102,6 +109,16 @@
 		})({
 			image : null,
 			onLoad : function() {
+				$(document).on("click", "#menuToggler",function(event){
+					event.preventDefault();
+					event.stopPropagation();
+					event.stopImmediatePropagation();
+				});
+				$(document).on("click", function(){
+					if($("#menuToggler").attr("aria-expanded") === 'true'){
+						$("#menuToggler").click();
+					}
+				});
 				$('#summernote').summernote({
 					height : 500
 				});
@@ -130,8 +147,14 @@
 					}
 					_.sendAjax("modifyPost.ajax");
 				});
+				$("#deletePost").on("click", function() {
+					_.sendAjax("deletePost.ajax");
+				});
+				$("#getSummary").on("click", function() {
+					$("#summaryArea").val($(".note-editable")[0].outerText.replace(/\n\n/gi, "\n"));
+				})
 			},
-			sendAjax : function(url) {
+			sendAjax : function(url, cb) {
 				$.ajax({
 					url : url,
 					type : "POST",
@@ -141,6 +164,9 @@
 						_.notification(data);
 						$("#post_code").val(data.postCode);
 						_.readData();
+						if (cb !== null && cb !== undefined && typeof cb === "function") {
+							cb.call(this);
+						}
 					},
 					error : function(xhr, error, thrown) {
 						toastr.error('error.');
@@ -171,6 +197,10 @@
 					toastr.error('No empty of iamge.');
 					return false;
 				}
+				if ($.trim($("#summaryArea").val()) === "") {
+					toastr.error('No empty of summary.');
+					return false;
+				}
 				return true;
 			},
 			getData : function() {
@@ -182,7 +212,7 @@
 					urlkey : $("#urlkey").val(),
 					changefleg : $("#changefleg").val(),
 					priority : $("#priority").val(),
-					summary : $(".note-editable")[0].outerText.replace(/\n\n/gi, "<br />"),
+					summary : $("#summaryArea").val().replace(/\n/gi, "<br />"),
 					image : _.image
 				};
 			},
@@ -210,8 +240,10 @@
 							$("#priority").trigger("change");
 							_.image = data.image;
 							$("#imagepanel").prop("src", _.image);
+							$("#summaryArea").val(data.summary);
 							$("#createPost").hide();
 							$("#modifyPost").show();
+							$("#deletePost").show();
 						} else {
 							$("#post_code").val("");
 							$("#title").val("");
@@ -224,8 +256,10 @@
 							$("#priority").trigger("change");
 							_.image = null;
 							$("#imagepanel").prop("src", "");
+							$("#summaryArea").val("");
 							$("#createPost").show();
 							$("#modifyPost").hide();
+							$("#deletePost").hide();
 						}
 						if (cb !== null && cb !== undefined && typeof cb === "function") {
 							cb.call(this);

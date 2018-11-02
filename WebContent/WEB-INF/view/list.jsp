@@ -32,10 +32,11 @@
 						</div>
 						<div class="col-lg-7 col-xl-7 ml-xl-4 mb-4">
 							<h3 class="mb-3 font-weight-bold dark-grey-text">
-								<strong>${item.title}</strong>
+								<p class="my-list-title">${item.title}</p>
 							</h3>
 							<p class="grey-text my-list-summary">${item.summary}</p>
 							<div style="text-align:right;">
+								<p class="my-list-date">${item.date}</p>
 								<a href="./?category=${category_code}&post=${item.idx}" class="btn btn-primary btn-sm">Go read
 									 <i class="fa fa-play ml-2"></i>
 								</a>
@@ -85,6 +86,16 @@
 				onLoad : function() {
 					$("#writePost").on("click", function(){
 						window.location.href="./index.html?category="+$("#category_code").val();
+					});
+					$(document).on("click", "#menuToggler",function(event){
+						event.preventDefault();
+						event.stopPropagation();
+						event.stopImmediatePropagation();
+					});
+					$(document).on("click", function(){
+						if($("#menuToggler").attr("aria-expanded") === 'true'){
+							$("#menuToggler").click();
+						}
 					});
 				}
 			});

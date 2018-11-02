@@ -48,15 +48,15 @@ public class PostAjax extends IController {
 			return ret;
 		});
 		if (Util.StringIsEmptyOrNull(bean.getCategoryCode())) {
-			getPrinter(res).println("categoryCode error");
+			AjaxReturn(res, AjaxReturnBean.ERROR, "categoryCode error", -1);
 			return;
 		}
 		if (Util.StringIsEmptyOrNull(bean.getTitle())) {
-			getPrinter(res).println("title error");
+			AjaxReturn(res, AjaxReturnBean.ERROR, "title error", -1);
 			return;
 		}
 		if (Util.StringIsEmptyOrNull(bean.getContents())) {
-			getPrinter(res).println("contents error");
+			AjaxReturn(res, AjaxReturnBean.ERROR, "contents error", -1);
 			return;
 		}
 		if (Util.StringIsEmptyOrNull(bean.getUrlkey()) || FactoryDao.getDao(PostDao.class).hasUrlKey(bean.getUrlkey())) {
@@ -115,6 +115,152 @@ public class PostAjax extends IController {
 		AjaxReturn(res, AjaxReturnBean.SUCCESS, "The post is created.", post.getIdx());
 	}
 
+	@RequestMapping(value = "/modifyPost.ajax", produces = "application/text; charset=utf8")
+	public void modifyPost(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
+		int changeFlag = 5;
+		int priority = 5;
+		PostBean bean = JsonConverter.parseObject(getPostData(req), (obj) -> {
+			PostBean ret = new PostBean();
+			ret.setIdx(JsonConverter.JsonString(obj, "idx"));
+			ret.setCategoryCode(JsonConverter.JsonString(obj, "categoryCode"));
+			ret.setTitle(JsonConverter.JsonString(obj, "title"));
+			ret.setContents(JsonConverter.JsonString(obj, "contents"));
+			ret.setUrlkey(JsonConverter.JsonString(obj, "urlkey"));
+			ret.setChangefleg(JsonConverter.JsonString(obj, "changefleg"));
+			ret.setPriority(JsonConverter.JsonString(obj, "priority"));
+			ret.setImage(new String(JsonConverter.JsonBytes(obj, "image")));
+			ret.setSummary(JsonConverter.JsonString(obj, "summary"));
+			return ret;
+		});
+
+		if (Util.StringIsEmptyOrNull(bean.getIdx())) {
+			AjaxReturn(res, AjaxReturnBean.ERROR, "post code error", -1);
+			return;
+		}
+		int idx;
+		try {
+			idx = Integer.parseInt(bean.getIdx());
+		} catch (Exception e) {
+			AjaxReturn(res, AjaxReturnBean.ERROR, "post code error", -1);
+			return;
+		}
+		Post post = FactoryDao.getDao(PostDao.class).getPostsByIdx(idx);
+		if (post == null) {
+			AjaxReturn(res, AjaxReturnBean.ERROR, "post code error", -1);
+			return;
+		}
+
+		if (Util.StringIsEmptyOrNull(bean.getCategoryCode())) {
+			AjaxReturn(res, AjaxReturnBean.ERROR, "categoryCode error", -1);
+			return;
+		}
+		if (Util.StringIsEmptyOrNull(bean.getTitle())) {
+			AjaxReturn(res, AjaxReturnBean.ERROR, "title error", -1);
+			return;
+		}
+		if (Util.StringIsEmptyOrNull(bean.getContents())) {
+			AjaxReturn(res, AjaxReturnBean.ERROR, "contents error", -1);
+			return;
+		}
+		if (Util.StringIsEmptyOrNull(bean.getUrlkey()) || FactoryDao.getDao(PostDao.class).hasUrlKey(bean.getUrlkey(), idx)) {
+			bean.setUrlkey(Util.createGUID());
+		}
+
+		if (Util.StringIsEmptyOrNull(bean.getChangefleg())) {
+			changeFlag = 5;
+		} else {
+			try {
+				changeFlag = Integer.parseInt(bean.getChangefleg());
+			} catch (Exception e) {
+				changeFlag = 5;
+			}
+		}
+		if (Util.StringIsEmptyOrNull(bean.getPriority())) {
+			priority = 5;
+		} else {
+			try {
+				priority = Integer.parseInt(bean.getPriority());
+			} catch (Exception e) {
+				priority = 5;
+			}
+		}
+		if (bean.getImage() == null) {
+			AjaxReturn(res, AjaxReturnBean.ERROR, "Please choice the image.", -1);
+			return;
+		}
+
+		post.setCategory(FactoryDao.getDao(CategoryDao.class).getCategory(bean.getCategoryCode()));
+		if (post.getCategory() == null) {
+			AjaxReturn(res, AjaxReturnBean.ERROR, "CategoryCode mapping error.", -1);
+			return;
+		}
+		if (Util.StringEquals("01", bean.getCategoryCode())) {
+			for (Post p : FactoryDao.getDao(PostDao.class).getPostsByCategory(post.getCategory())) {
+				if (p.getIdx() == post.getIdx()) {
+					continue;
+				}
+				p.setIsdeleted(true);
+				FactoryDao.getDao(PostDao.class).update(p);
+			}
+		}
+		post.setTitle(bean.getTitle());
+		String filepath = writeFile(PropertyMap.getInstance().getProperty("config", "file_path_root"), bean.getUrlkey(), bean.getContents());
+		post.setFilepath(filepath);
+		post.setChangefreg(changeFlag);
+		post.setPriority(priority);
+		post.setLocation(PropertyMap.getInstance().getProperty("config", "web_root") + "/" + bean.getUrlkey() + ".html");
+		post.setCreatedated(new Date());
+		post.setLastUpdated(new Date());
+		post.setGuid(bean.getUrlkey());
+		post.setSummary(bean.getSummary());
+		post.setIsdeleted(false);
+		post.setImage(bean.getImage().getBytes());
+		FactoryDao.getDao(PostDao.class).update(post);
+
+		AjaxReturn(res, AjaxReturnBean.SUCCESS, "The post is modified.", post.getIdx());
+	}
+
+	@RequestMapping(value = "/deletePost.ajax", produces = "application/text; charset=utf8")
+	public void deletePost(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
+		PostBean bean = JsonConverter.parseObject(getPostData(req), (obj) -> {
+			PostBean ret = new PostBean();
+			ret.setCategoryCode(JsonConverter.JsonString(obj, "categoryCode"));
+			ret.setIdx(JsonConverter.JsonString(obj, "idx"));
+			return ret;
+		});
+		if (Util.StringIsEmptyOrNull(bean.getCategoryCode())) {
+			AjaxReturn(res, AjaxReturnBean.ERROR, "category error", -1);
+			return;
+		}
+		if (Util.StringIsEmptyOrNull(bean.getIdx())) {
+			AjaxReturn(res, AjaxReturnBean.ERROR, "idx error", -1);
+			return;
+		}
+		int idx;
+		try {
+			idx = Integer.parseInt(bean.getIdx());
+		} catch (Throwable e) {
+			AjaxReturn(res, AjaxReturnBean.ERROR, "idx error", -1);
+			return;
+		}
+
+		Post post = FactoryDao.getDao(PostDao.class).getPostsByIdx(idx);
+		if (post == null) {
+			AjaxReturn(res, AjaxReturnBean.ERROR, "idx error", -1);
+			return;
+		}
+		if (!Util.StringEquals(bean.getCategoryCode(), post.getCategory().getCategoryCode())) {
+			AjaxReturn(res, AjaxReturnBean.ERROR, "category error", -1);
+			return;
+		}
+
+		post.setIsdeleted(true);
+		post.setLastUpdated(new Date());
+		FactoryDao.getDao(PostDao.class).update(post);
+
+		AjaxReturn(res, AjaxReturnBean.SUCCESS, "The post is deleted.", post.getIdx());
+	}
+
 	private void AjaxReturn(HttpServletResponse res, String type, String message, int postCode) {
 		AjaxReturnBean bean = new AjaxReturnBean();
 		bean.setType(type);
@@ -141,6 +287,7 @@ public class PostAjax extends IController {
 				bean.setPriority(Integer.toString(posts.get(0).getPriority()));
 				bean.setChangefleg(Integer.toString(posts.get(0).getChangefreg()));
 				bean.setImage(new String(posts.get(0).getImage()));
+				bean.setSummary(posts.get(0).getSummary());
 			} else {
 				bean.setIdx("");
 			}
@@ -156,6 +303,9 @@ public class PostAjax extends IController {
 					bean.setPriority(Integer.toString(post.getPriority()));
 					bean.setChangefleg(Integer.toString(post.getChangefreg()));
 					bean.setImage(new String(post.getImage()));
+					bean.setSummary(post.getSummary());
+				} else {
+					bean.setIdx("");
 				}
 			} catch (Throwable e) {
 				e.printStackTrace();

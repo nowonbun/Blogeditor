@@ -11,3 +11,4 @@
 <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote.css" rel="stylesheet">
 <link href="css/common.css" rel="stylesheet">
 <link href="css/editor.css" rel="stylesheet">
+<link rel="icon" type="./favicon.ico" href="favicon.ico">

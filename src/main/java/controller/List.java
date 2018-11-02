@@ -1,5 +1,6 @@
 package controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +21,7 @@ import model.Category;
 public class List extends IController {
 
 	private static final long serialVersionUID = 1L;
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분에 작성된 글...");
 
 	@RequestMapping(value = "/DialyList.html")
 	protected String dialy(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
@@ -92,11 +94,15 @@ public class List extends IController {
 		Category category = FactoryDao.getDao(CategoryDao.class).getCategory(categoryCode);
 		java.util.List<model.Post> posts = FactoryDao.getDao(PostDao.class).getPostsByCategory(category);
 		for (model.Post post : posts) {
+			if (post.getIsdeleted()) {
+				continue;
+			}
 			ListBean bean = new ListBean();
 			bean.setIdx(Integer.toString(post.getIdx()));
 			bean.setTitle(post.getTitle());
 			bean.setImage(new String(post.getImage()));
 			bean.setSummary(post.getSummary());
+			bean.setDate(sdf.format(post.getCreatedated()));
 			ret.add(bean);
 		}
 		return ret;

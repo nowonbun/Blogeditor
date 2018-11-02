@@ -5,6 +5,7 @@ public class ListBean {
 	private String title;
 	private String summary;
 	private String image;
+	private String date;
 
 	public String getIdx() {
 		return idx;
@@ -36,6 +37,14 @@ public class ListBean {
 
 	public void setImage(String image) {
 		this.image = image;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
 	}
 
 }

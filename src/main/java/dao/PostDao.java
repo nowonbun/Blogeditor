@@ -23,11 +23,21 @@ public class PostDao extends Dao<Post> {
 			return query.getResultList().size() > 0;
 		});
 	}
+	
+	public boolean hasUrlKey(String guid, int idx) {
+		return transaction((em) -> {
+			String qy = "SELECT p FROM Post p WHERE p.guid = :guid and p.isdeleted = false and p.idx != :idx";
+			Query query = em.createQuery(qy);
+			query.setParameter("guid", guid);
+			query.setParameter("idx", idx);
+			return query.getResultList().size() > 0;
+		});
+	}
 
 	@SuppressWarnings("unchecked")
 	public List<Post> getPostsByCategory(Category category) {
 		return transaction((em) -> {
-			String qy = "SELECT p FROM Post p WHERE p.category = :category and p.isdeleted = false";
+			String qy = "SELECT p FROM Post p WHERE p.category = :category and p.isdeleted = false order by p.idx desc";
 			Query query = em.createQuery(qy);
 			query.setParameter("category", category);
 			return (List<Post>) query.getResultList();
