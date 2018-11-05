@@ -32,7 +32,7 @@
 						</div>
 						<div class="col-lg-7 col-xl-7 ml-xl-4 mb-4">
 							<h3 class="mb-3 font-weight-bold dark-grey-text">
-								<p class="my-list-title">${item.title}</p>
+								<p class="my-list-title"><a href="./?category=${category_code}&post=${item.idx}">${item.title}</a></p>
 							</h3>
 							<p class="grey-text my-list-summary">${item.summary}</p>
 							<div style="text-align:right;">

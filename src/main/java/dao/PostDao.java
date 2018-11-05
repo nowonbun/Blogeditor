@@ -23,7 +23,7 @@ public class PostDao extends Dao<Post> {
 			return query.getResultList().size() > 0;
 		});
 	}
-	
+
 	public boolean hasUrlKey(String guid, int idx) {
 		return transaction((em) -> {
 			String qy = "SELECT p FROM Post p WHERE p.guid = :guid and p.isdeleted = false and p.idx != :idx";
@@ -56,12 +56,13 @@ public class PostDao extends Dao<Post> {
 			}
 		});
 	}
-	
-	public Post getPrePostByIdx(int idx) {
+
+	public Post getPrePostByIdx(Category category, int idx) {
 		return transaction((em) -> {
-			String qy = "SELECT p FROM Post p WHERE p.idx = (SELECT MAX(p1.idx) FROM Post p1 WHERE p1.idx < :idx AND p1.isdeleted = false)";
+			String qy = "SELECT p FROM Post p WHERE p.idx = (SELECT MAX(p1.idx) FROM Post p1 WHERE p1.idx < :idx AND p1.category = :category AND p1.isdeleted = false)";
 			Query query = em.createQuery(qy);
 			query.setParameter("idx", idx);
+			query.setParameter("category", category);
 			try {
 				return (Post) query.getSingleResult();
 			} catch (NoResultException e) {
@@ -69,11 +70,13 @@ public class PostDao extends Dao<Post> {
 			}
 		});
 	}
-	public Post getNextPostByIdx(int idx) {
+
+	public Post getNextPostByIdx(Category category, int idx) {
 		return transaction((em) -> {
-			String qy = "SELECT p FROM Post p WHERE p.idx = (SELECT MIN(p1.idx) FROM Post p1 WHERE p1.idx > :idx AND p1.isdeleted = false)";
+			String qy = "SELECT p FROM Post p WHERE p.idx = (SELECT MIN(p1.idx) FROM Post p1 WHERE p1.idx > :idx AND p1.category = :category AND p1.isdeleted = false)";
 			Query query = em.createQuery(qy);
 			query.setParameter("idx", idx);
+			query.setParameter("category", category);
 			try {
 				return (Post) query.getSingleResult();
 			} catch (NoResultException e) {

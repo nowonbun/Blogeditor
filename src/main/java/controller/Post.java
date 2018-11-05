@@ -2,6 +2,7 @@ package controller;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,11 +16,13 @@ import common.FactoryDao;
 import common.IController;
 import dao.CategoryDao;
 import dao.PostDao;
+import model.Category;
 
 @Controller
 public class Post extends IController {
 
 	private static final long serialVersionUID = 1L;
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분에 작성된 글...");
 
 	@RequestMapping(value = "/index.html")
 	public String index(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
@@ -29,8 +32,10 @@ public class Post extends IController {
 		if (req.getParameter("category") != null) {
 			categoryCode = req.getParameter("category");
 		}
-		if (FactoryDao.getDao(CategoryDao.class).getCategory(categoryCode) == null) {
+		Category category = FactoryDao.getDao(CategoryDao.class).getCategory(categoryCode);
+		if (category == null) {
 			categoryCode = "01";
+			category = FactoryDao.getDao(CategoryDao.class).getCategory(categoryCode);
 		}
 		if (req.getParameter("post") != null) {
 			postCode = req.getParameter("post");
@@ -65,12 +70,13 @@ public class Post extends IController {
 		if ("01".equals(categoryCode) || idx == -1) {
 			modelmap.addAttribute("isPreNextPostView", false);
 		} else {
-			model.Post pre = FactoryDao.getDao(PostDao.class).getPrePostByIdx(idx);
-			model.Post next = FactoryDao.getDao(PostDao.class).getNextPostByIdx(idx);
+			model.Post pre = FactoryDao.getDao(PostDao.class).getPrePostByIdx(category, idx);
+			model.Post next = FactoryDao.getDao(PostDao.class).getNextPostByIdx(category, idx);
 			if (pre != null) {
 				modelmap.addAttribute("isPrePost", true);
 				modelmap.addAttribute("prePostIdx", pre.getIdx());
 				modelmap.addAttribute("prePost", pre.getTitle());
+				modelmap.addAttribute("prePostDate", sdf.format(pre.getCreatedated()));
 			} else {
 				modelmap.addAttribute("isPrePost", false);
 			}
@@ -78,6 +84,7 @@ public class Post extends IController {
 				modelmap.addAttribute("isNextPost", true);
 				modelmap.addAttribute("nextPostIdx", next.getIdx());
 				modelmap.addAttribute("nextPost", next.getTitle());
+				modelmap.addAttribute("nextPostDate", sdf.format(next.getCreatedated()));
 			} else {
 				modelmap.addAttribute("isNextPost", false);
 			}

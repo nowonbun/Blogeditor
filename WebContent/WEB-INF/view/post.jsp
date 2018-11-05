@@ -12,12 +12,12 @@
 		<div style="text-align: right">
 			<c:if test="${post_code eq -1}">
 				<a class="btn btn-primary btn-sm" role="button" id="createPost">작성하기</a>
-				<a class="btn btn-primary btn-sm" role="button" id="modifyPost" style="display: none;">수정하기</a> 
+				<a class="btn btn-primary btn-sm" role="button" id="modifyPost" style="display: none;">수정하기</a>
 				<a class="btn btn-primary btn-sm" role="button" id="deletePost" style="display: none;">삭제하기</a>
 			</c:if>
 			<c:if test="${post_code ne -1}">
 				<a class="btn btn-primary btn-sm" role="button" id="createPost" style="display: none;">작성하기</a>
-				<a class="btn btn-primary btn-sm" role="button" id="modifyPost">수정하기</a> 
+				<a class="btn btn-primary btn-sm" role="button" id="modifyPost">수정하기</a>
 				<a class="btn btn-primary btn-sm" role="button" id="deletePost">삭제하기</a>
 			</c:if>
 		</div>
@@ -52,7 +52,9 @@
 							</div>
 							<div class="row">
 								<div class="col-md-12 col-lg-5 mb-2">
-									<p><img src="${image}" id="imagepanel" class="mt-3 mb-3 summary-image img-fluid"></p>
+									<p>
+										<img src="${image}" id="imagepanel" class="mt-3 mb-3 summary-image img-fluid">
+									</p>
 									<input class="form-control form-control-sm" type="text" id="image" placeholder="IMAGE" readonly style="width: 250px; display: inline;">
 									<div class="file-field" style="display: inline;">
 										<div class="btn btn-primary btn-sm float-left" style="margin: 0px;">
@@ -80,21 +82,26 @@
 						<div class="card-body my-pre-post-nav">
 							<div class="row">
 								<c:if test="${isPrePost eq true}">
-									<div class="col-12 mb-1">이전글 : <a href="http://localhost:8080/BlogEditer/?category=02&post=${prePostIdx}">${prePost}</a></div>
+									<div class="col-12 mb-1">
+										<a href="http://localhost:8080/BlogEditer/?category=02&post=${prePostIdx}"><span class="my-pre-next-icon"><i class="fa fa-chevron-up"></i>이전글</span>${prePost}</a>
+										<p class="my-list-date float-right">${prePostDate}</p>
+									</div>
 								</c:if>
 								<c:if test="${isPrePost eq true && isNextPost eq true}">
 									<div class="col-12 my-blog-line"></div>
 								</c:if>
 								<c:if test="${isNextPost eq true}">
-									<div class="col-12 mt-1">다음글 : <a href="http://localhost:8080/BlogEditer/?category=02&post=${nextPostIdx}">${nextPost}</a></div>
+									<div class="col-12 mt-1">
+										<a href="http://localhost:8080/BlogEditer/?category=02&post=${nextPostIdx}"><span class="my-pre-next-icon"><i class="fa fa-chevron-down"></i>다음글</span>${nextPost}</a>
+										<p class="my-list-date float-right">${nextPostDate}</p>
+									</div>
 								</c:if>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</c:if>
-		 <c:if test="${isViewRecently eq true}">
+		</c:if> <c:if test="${isViewRecently eq true}">
 			<fieldset class="box-shadow-0 px-3 py-3 blog-radius mb-3 my-style-custom">
 				<legend class="box-shadow-0 blog-legend px-3 blog-radius">
 					<label>최신글</label>
@@ -133,40 +140,66 @@
 						$("#menuToggler").click();
 					}
 				});
+				if ($.trim($("#imagepanel").prop("src")) !== "") {
+					_.image = $("#imagepanel").prop("src");
+				}
 				var code = $('#summernote').val();
 				$('#summernote').summernote({
 					height : 500
 				});
 				$('#summernote').summernote('code', code);
-				$(document).off("change", '.file-field input[type="file"]').on("change", '.file-field input[type="file"]', function() {
-					var file = $("#img_file")[0].files[0];
-					if (file.size > 100000) {
-						toastr.error('The image size is exceeded.');
-						return;
-					}
-					_.readFile(file, function(node) {
-						_.image = node.binary;
-						$("#imagepanel").prop("src", _.image);
-					});
-				});
-				$("#createPost").on("click", function() {
-					if (!_.validate()) {
-						return;
-					}
-					_.sendAjax("insertPost.ajax");
-				});
-				$("#modifyPost").on("click", function() {
-					if (!_.validate()) {
-						return;
-					}
-					_.sendAjax("modifyPost.ajax");
-				});
-				$("#deletePost").on("click", function() {
-					_.sendAjax("deletePost.ajax");
-				});
-				$("#getSummary").on("click", function() {
-					$("#summaryArea").val($(".note-editable")[0].outerText.replace(/\n\n/gi, "\n"));
-				})
+				$(document).off("change", '.file-field input[type="file"]').on(
+						"change", '.file-field input[type="file"]', function() {
+							var file = $("#img_file")[0].files[0];
+							if (file.size > 100000) {
+								toastr.error('The image size is exceeded.');
+								return;
+							}
+							_.readFile(file, function(node) {
+								_.image = node.binary;
+								$("#imagepanel").prop("src", _.image);
+							});
+						});
+				$("#createPost").on(
+						"click",
+						function() {
+							if (!_.validate()) {
+								return;
+							}
+							_.sendAjax("insertPost.ajax", function() {
+								window.location.href = "./?category="
+										+ $("#category_code").val() + "&post="
+										+ $("#post_code").val();
+							});
+						});
+				$("#modifyPost").on(
+						"click",
+						function() {
+							if (!_.validate()) {
+								return;
+							}
+							_.sendAjax("modifyPost.ajax", function() {
+								window.location.href = "./?category="
+										+ $("#category_code").val() + "&post="
+										+ $("#post_code").val();
+							});
+						});
+				$("#deletePost").on(
+						"click",
+						function() {
+							_.sendAjax("deletePost.ajax", function() {
+								window.location.href = "./?category="
+										+ $("#category_code").val();
+							});
+						});
+
+				$("#getSummary").on(
+						"click",
+						function() {
+							$("#summaryArea").val(
+									$(".note-editable")[0].outerText.replace(
+											/\n\n/gi, "\n"));
+						});
 			},
 			sendAjax : function(url, cb) {
 				$.ajax({
@@ -177,8 +210,8 @@
 					success : function(data) {
 						_.notification(data);
 						$("#post_code").val(data.postCode);
-						_.readData();
-						if (cb !== null && cb !== undefined && typeof cb === "function") {
+						if (cb !== null && cb !== undefined
+								&& typeof cb === "function") {
 							cb.call(this);
 						}
 					},
@@ -254,7 +287,8 @@
 							$("#priority").trigger("change");
 							_.image = data.image;
 							$("#imagepanel").prop("src", _.image);
-							$("#summaryArea").val(data.summary.replace(/<br>/gi,"\n"));
+							$("#summaryArea").val(
+									data.summary.replace(/<br>/gi, "\n"));
 							$("#createPost").hide();
 							$("#modifyPost").show();
 							$("#deletePost").show();
@@ -275,7 +309,8 @@
 							$("#modifyPost").hide();
 							$("#deletePost").hide();
 						}
-						if (cb !== null && cb !== undefined && typeof cb === "function") {
+						if (cb !== null && cb !== undefined
+								&& typeof cb === "function") {
 							cb.call(this);
 						}
 					},
@@ -311,7 +346,8 @@
 				};
 				node.reader.onload = function(e) {
 					node.binary = this.result;
-					if (cb !== null && cb !== undefined && typeof cb === "function") {
+					if (cb !== null && cb !== undefined
+							&& typeof cb === "function") {
 						cb.call(this, node);
 						return;
 					}
