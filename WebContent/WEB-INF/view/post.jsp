@@ -10,9 +10,16 @@
 		<jsp:include page="./share/header.jsp"></jsp:include>
 		<main class="mt-5">
 		<div style="text-align: right">
-			<a class="btn btn-primary btn-sm" role="button" id="createPost" style="display:none;">작성하기</a> 
-			<a class="btn btn-primary btn-sm" role="button" id="modifyPost" style="display:none;">수정하기</a>
-			<a class="btn btn-primary btn-sm" role="button" id="deletePost" style="display:none;">삭제하기</a>
+			<c:if test="${post_code eq -1}">
+				<a class="btn btn-primary btn-sm" role="button" id="createPost">작성하기</a>
+				<a class="btn btn-primary btn-sm" role="button" id="modifyPost" style="display: none;">수정하기</a> 
+				<a class="btn btn-primary btn-sm" role="button" id="deletePost" style="display: none;">삭제하기</a>
+			</c:if>
+			<c:if test="${post_code ne -1}">
+				<a class="btn btn-primary btn-sm" role="button" id="createPost" style="display: none;">작성하기</a>
+				<a class="btn btn-primary btn-sm" role="button" id="modifyPost">수정하기</a> 
+				<a class="btn btn-primary btn-sm" role="button" id="deletePost">삭제하기</a>
+			</c:if>
 		</div>
 		<div class="row mb-3">
 			<div class="col-12 d-flex align-items-stretch">
@@ -21,43 +28,44 @@
 						<form id="mainForm">
 							<input type="hidden" id="category_code" value="${category_code}"> <input type="hidden" id="post_code" value="${post_code}">
 							<h1 class="card-title">
-								<input class="form-control form-control-lg" type="text" id="title" placeholder="제목">
+								<input class="form-control form-control-lg" type="text" id="title" placeholder="제목" value="${title}">
 							</h1>
 							<div class="card-text">
-								<textarea id="summernote"></textarea>
+								<textarea id="summernote">${contents}</textarea>
 							</div>
 							<div class="mt-2 row">
 								<div class="col-4">
 									<div class="md-form">
-										<input type="text" id="urlkey" class="form-control"> <label for="urlkey">url unique key</label>
+										<input type="text" id="urlkey" class="form-control" value="${urlkey}"> <label for="urlkey">url unique key</label>
 									</div>
 								</div>
 								<div class="col-4">
 									<div class="md-form">
-										<input type="number" id="changefleg" class="form-control"> <label for="changefleg">change fleg</label>
+										<input type="number" id="changefleg" class="form-control" value="${changeflag}"> <label for="changefleg">change fleg</label>
 									</div>
 								</div>
 								<div class="col-4">
 									<div class="md-form">
-										<input type="number" id="priority" class="form-control"> <label for="priority">priority</label>
+										<input type="number" id="priority" class="form-control" value="${priority}"> <label for="priority">priority</label>
 									</div>
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-12 col-lg-5 mb-2">
-									<img src="#" id="imagepanel" class="mt-3 mb-3 summary-image img-fluid"><br /> <input class="form-control form-control-sm" type="text" id="image" placeholder="IMAGE"
-										readonly style="width: 250px; display: inline;">
+									<p><img src="${image}" id="imagepanel" class="mt-3 mb-3 summary-image img-fluid"></p>
+									<input class="form-control form-control-sm" type="text" id="image" placeholder="IMAGE" readonly style="width: 250px; display: inline;">
 									<div class="file-field" style="display: inline;">
 										<div class="btn btn-primary btn-sm float-left" style="margin: 0px;">
 											<span>Choose</span> <input type="file" id="img_file" accept="image/*" onchange="$('#image').val($(this).val())">
 										</div>
 									</div>
+									<div style="font-size: 7pt;">Size 340(width) * 170(height) and Less than 100,000 byte</div>
 								</div>
 								<div class="col-md-12 col-lg-7 mb-2">
-									<div style="text-align:right;">
+									<div style="text-align: right;">
 										<a class="btn btn-primary btn-sm" role="button" id="getSummary">서머리 가져오기</a>
 									</div>
-									<textarea id="summaryArea" style="width:100%;height:80%;resize: none;"></textarea>
+									<textarea id="summaryArea" style="width: 100%; height: 80%; resize: none;">${summary}</textarea>
 								</div>
 							</div>
 						</form>
@@ -65,22 +73,28 @@
 				</div>
 			</div>
 		</div>
-		<c:if test="${isPrePostView eq true}">
+		<c:if test="${isPreNextPostView eq true}">
 			<div class="row mt-3 mb-3">
 				<div class="col-12 d-flex align-items-stretch">
 					<div class="card my-style-custom">
 						<div class="card-body my-pre-post-nav">
 							<div class="row">
-								<div class="col-12 mb-1">이전글</div>
-								<div class="col-12 my-blog-line"></div>
-								<div class="col-12 mt-1">다음글</div>
+								<c:if test="${isPrePost eq true}">
+									<div class="col-12 mb-1">이전글 : <a href="http://localhost:8080/BlogEditer/?category=02&post=${prePostIdx}">${prePost}</a></div>
+								</c:if>
+								<c:if test="${isPrePost eq true && isNextPost eq true}">
+									<div class="col-12 my-blog-line"></div>
+								</c:if>
+								<c:if test="${isNextPost eq true}">
+									<div class="col-12 mt-1">다음글 : <a href="http://localhost:8080/BlogEditer/?category=02&post=${nextPostIdx}">${nextPost}</a></div>
+								</c:if>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</c:if>
-		<c:if test="${isViewRecently eq true}">
+		 <c:if test="${isViewRecently eq true}">
 			<fieldset class="box-shadow-0 px-3 py-3 blog-radius mb-3 my-style-custom">
 				<legend class="box-shadow-0 blog-legend px-3 blog-radius">
 					<label>최신글</label>
@@ -109,26 +123,26 @@
 		})({
 			image : null,
 			onLoad : function() {
-				$(document).on("click", "#menuToggler",function(event){
+				$(document).on("click", "#menuToggler", function(event) {
 					event.preventDefault();
 					event.stopPropagation();
 					event.stopImmediatePropagation();
 				});
-				$(document).on("click", function(){
-					if($("#menuToggler").attr("aria-expanded") === 'true'){
+				$(document).on("click", function() {
+					if ($("#menuToggler").attr("aria-expanded") === 'true') {
 						$("#menuToggler").click();
 					}
 				});
+				var code = $('#summernote').val();
 				$('#summernote').summernote({
 					height : 500
 				});
-				_.readData(function(){
-					$("#bodyMain").show();
-				});
+				$('#summernote').summernote('code', code);
 				$(document).off("change", '.file-field input[type="file"]').on("change", '.file-field input[type="file"]', function() {
 					var file = $("#img_file")[0].files[0];
-					if (file.size > 1024) {
-						console.log(file.size);
+					if (file.size > 100000) {
+						toastr.error('The image size is exceeded.');
+						return;
 					}
 					_.readFile(file, function(node) {
 						_.image = node.binary;
@@ -212,7 +226,7 @@
 					urlkey : $("#urlkey").val(),
 					changefleg : $("#changefleg").val(),
 					priority : $("#priority").val(),
-					summary : $("#summaryArea").val().replace(/\n/gi, "<br />"),
+					summary : $("#summaryArea").val().replace(/\n/gi, "<br>"),
 					image : _.image
 				};
 			},
@@ -240,7 +254,7 @@
 							$("#priority").trigger("change");
 							_.image = data.image;
 							$("#imagepanel").prop("src", _.image);
-							$("#summaryArea").val(data.summary);
+							$("#summaryArea").val(data.summary.replace(/<br>/gi,"\n"));
 							$("#createPost").hide();
 							$("#modifyPost").show();
 							$("#deletePost").show();

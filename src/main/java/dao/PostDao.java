@@ -56,4 +56,29 @@ public class PostDao extends Dao<Post> {
 			}
 		});
 	}
+	
+	public Post getPrePostByIdx(int idx) {
+		return transaction((em) -> {
+			String qy = "SELECT p FROM Post p WHERE p.idx = (SELECT MAX(p1.idx) FROM Post p1 WHERE p1.idx < :idx AND p1.isdeleted = false)";
+			Query query = em.createQuery(qy);
+			query.setParameter("idx", idx);
+			try {
+				return (Post) query.getSingleResult();
+			} catch (NoResultException e) {
+				return null;
+			}
+		});
+	}
+	public Post getNextPostByIdx(int idx) {
+		return transaction((em) -> {
+			String qy = "SELECT p FROM Post p WHERE p.idx = (SELECT MIN(p1.idx) FROM Post p1 WHERE p1.idx > :idx AND p1.isdeleted = false)";
+			Query query = em.createQuery(qy);
+			query.setParameter("idx", idx);
+			try {
+				return (Post) query.getSingleResult();
+			} catch (NoResultException e) {
+				return null;
+			}
+		});
+	}
 }

@@ -1,12 +1,12 @@
 @charset "UTF-8";
 
 @font-face {
-	font-family: 'TlabShinYB';
-	src: url('../font/TlabShinYB.otf') format('truetype');
+	font-family: 'childpaper';
+	src: url('../font/childpaper.woff') format('woff');
 }
 
 body {
-	font-family: TlabShinYB;
+	font-family: childpaper;
 }
 
 div#bodyMain{
@@ -115,6 +115,7 @@ main{
 	height: 170px;
 	margin-left: auto;
     margin-right: auto;
+    border: 1px solid #88a8e0;
 }
 
 .my-list-summary{
