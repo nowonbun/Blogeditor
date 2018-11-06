@@ -2,12 +2,10 @@ package ajax;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -41,7 +39,7 @@ public class PostAjax extends IController {
 			ret.setTitle(JsonConverter.JsonString(obj, "title"));
 			ret.setContents(JsonConverter.JsonString(obj, "contents"));
 			ret.setUrlkey(JsonConverter.JsonString(obj, "urlkey"));
-			ret.setChangefleg(JsonConverter.JsonString(obj, "changefleg"));
+			ret.setChangeflag(JsonConverter.JsonString(obj, "changefleg"));
 			ret.setPriority(JsonConverter.JsonString(obj, "priority"));
 			ret.setImage(new String(JsonConverter.JsonBytes(obj, "image")));
 			ret.setSummary(JsonConverter.JsonString(obj, "summary"));
@@ -63,11 +61,11 @@ public class PostAjax extends IController {
 			bean.setUrlkey(Util.createGUID());
 		}
 
-		if (Util.StringIsEmptyOrNull(bean.getChangefleg())) {
+		if (Util.StringIsEmptyOrNull(bean.getChangeflag())) {
 			changeFlag = 5;
 		} else {
 			try {
-				changeFlag = Integer.parseInt(bean.getChangefleg());
+				changeFlag = Integer.parseInt(bean.getChangeflag());
 			} catch (Exception e) {
 				changeFlag = 5;
 			}
@@ -121,30 +119,29 @@ public class PostAjax extends IController {
 		int priority = 5;
 		PostBean bean = JsonConverter.parseObject(getPostData(req), (obj) -> {
 			PostBean ret = new PostBean();
-			ret.setIdx(JsonConverter.JsonString(obj, "idx"));
+			ret.setPostCode(JsonConverter.JsonString(obj, "idx"));
 			ret.setCategoryCode(JsonConverter.JsonString(obj, "categoryCode"));
 			ret.setTitle(JsonConverter.JsonString(obj, "title"));
 			ret.setContents(JsonConverter.JsonString(obj, "contents"));
 			ret.setUrlkey(JsonConverter.JsonString(obj, "urlkey"));
-			ret.setChangefleg(JsonConverter.JsonString(obj, "changefleg"));
+			ret.setChangeflag(JsonConverter.JsonString(obj, "changefleg"));
 			ret.setPriority(JsonConverter.JsonString(obj, "priority"));
 			ret.setImage(new String(JsonConverter.JsonBytes(obj, "image")));
 			ret.setSummary(JsonConverter.JsonString(obj, "summary"));
 			return ret;
 		});
 
-		if (Util.StringIsEmptyOrNull(bean.getIdx())) {
+		if (Util.StringIsEmptyOrNull(bean.getPostCode())) {
 			AjaxReturn(res, AjaxReturnBean.ERROR, "post code error", -1);
 			return;
 		}
-		int idx;
 		try {
-			idx = Integer.parseInt(bean.getIdx());
+			bean.setIdx(Integer.parseInt(bean.getPostCode()));
 		} catch (Exception e) {
 			AjaxReturn(res, AjaxReturnBean.ERROR, "post code error", -1);
 			return;
 		}
-		Post post = FactoryDao.getDao(PostDao.class).getPostsByIdx(idx);
+		Post post = FactoryDao.getDao(PostDao.class).getPostsByIdx(bean.getIdx());
 		if (post == null) {
 			AjaxReturn(res, AjaxReturnBean.ERROR, "post code error", -1);
 			return;
@@ -162,15 +159,15 @@ public class PostAjax extends IController {
 			AjaxReturn(res, AjaxReturnBean.ERROR, "contents error", -1);
 			return;
 		}
-		if (Util.StringIsEmptyOrNull(bean.getUrlkey()) || FactoryDao.getDao(PostDao.class).hasUrlKey(bean.getUrlkey(), idx)) {
+		if (Util.StringIsEmptyOrNull(bean.getUrlkey()) || FactoryDao.getDao(PostDao.class).hasUrlKey(bean.getUrlkey(), bean.getIdx())) {
 			bean.setUrlkey(Util.createGUID());
 		}
 
-		if (Util.StringIsEmptyOrNull(bean.getChangefleg())) {
+		if (Util.StringIsEmptyOrNull(bean.getChangeflag())) {
 			changeFlag = 5;
 		} else {
 			try {
-				changeFlag = Integer.parseInt(bean.getChangefleg());
+				changeFlag = Integer.parseInt(bean.getChangeflag());
 			} catch (Exception e) {
 				changeFlag = 5;
 			}
@@ -225,26 +222,25 @@ public class PostAjax extends IController {
 		PostBean bean = JsonConverter.parseObject(getPostData(req), (obj) -> {
 			PostBean ret = new PostBean();
 			ret.setCategoryCode(JsonConverter.JsonString(obj, "categoryCode"));
-			ret.setIdx(JsonConverter.JsonString(obj, "idx"));
+			ret.setPostCode(JsonConverter.JsonString(obj, "idx"));
 			return ret;
 		});
 		if (Util.StringIsEmptyOrNull(bean.getCategoryCode())) {
 			AjaxReturn(res, AjaxReturnBean.ERROR, "category error", -1);
 			return;
 		}
-		if (Util.StringIsEmptyOrNull(bean.getIdx())) {
+		if (Util.StringIsEmptyOrNull(bean.getPostCode())) {
 			AjaxReturn(res, AjaxReturnBean.ERROR, "idx error", -1);
 			return;
 		}
-		int idx;
 		try {
-			idx = Integer.parseInt(bean.getIdx());
+			bean.setIdx(Integer.parseInt(bean.getPostCode()));
 		} catch (Throwable e) {
 			AjaxReturn(res, AjaxReturnBean.ERROR, "idx error", -1);
 			return;
 		}
 
-		Post post = FactoryDao.getDao(PostDao.class).getPostsByIdx(idx);
+		Post post = FactoryDao.getDao(PostDao.class).getPostsByIdx(bean.getIdx());
 		if (post == null) {
 			AjaxReturn(res, AjaxReturnBean.ERROR, "idx error", -1);
 			return;
@@ -269,74 +265,11 @@ public class PostAjax extends IController {
 		getPrinter(res).println(JsonConverter.create(bean));
 	}
 
-	@RequestMapping(value = "/getPost.ajax")
-	public void getPost(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
-		PostBean bean = JsonConverter.parseObject(getPostData(req), (obj) -> {
-			PostBean ret = new PostBean();
-			ret.setCategoryCode(JsonConverter.JsonString(obj, "categoryCode"));
-			ret.setIdx(JsonConverter.JsonString(obj, "postCode"));
-			return ret;
-		});
-		if (Util.StringEquals("01", bean.getCategoryCode())) {
-			List<Post> posts = FactoryDao.getDao(PostDao.class).getPostsByCategory(FactoryDao.getDao(CategoryDao.class).getCategory(bean.getCategoryCode()));
-			if (posts.size() > 0) {
-				bean.setIdx(Integer.toString(posts.get(0).getIdx()));
-				bean.setTitle(posts.get(0).getTitle());
-				bean.setContents(readFile(posts.get(0).getFilepath()));
-				bean.setUrlkey(posts.get(0).getGuid());
-				bean.setPriority(Integer.toString(posts.get(0).getPriority()));
-				bean.setChangefleg(Integer.toString(posts.get(0).getChangefreg()));
-				bean.setImage(new String(posts.get(0).getImage()));
-				bean.setSummary(posts.get(0).getSummary());
-			} else {
-				bean.setIdx("");
-			}
-		} else if (!Util.StringIsEmptyOrNull(bean.getIdx())) {
-			try {
-				int idx = Integer.parseInt(bean.getIdx());
-				Post post = FactoryDao.getDao(PostDao.class).getPostsByIdx(idx);
-				if (post != null) {
-					bean.setIdx(Integer.toString(post.getIdx()));
-					bean.setTitle(post.getTitle());
-					bean.setContents(readFile(post.getFilepath()));
-					bean.setUrlkey(post.getGuid());
-					bean.setPriority(Integer.toString(post.getPriority()));
-					bean.setChangefleg(Integer.toString(post.getChangefreg()));
-					bean.setImage(new String(post.getImage()));
-					bean.setSummary(post.getSummary());
-				} else {
-					bean.setIdx("");
-				}
-			} catch (Throwable e) {
-				e.printStackTrace();
-				bean.setIdx("");
-			}
-		} else {
-			bean.setIdx("");
-		}
-		getPrinter(res).println(JsonConverter.create(bean));
-	}
-
 	private String getPostData(HttpServletRequest req) {
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(req.getInputStream()))) {
 			return br.readLine();
 		} catch (Throwable e) {
 			throw new RuntimeException(e);
-		}
-	}
-
-	private String readFile(String filepath) {
-		File file = new File(filepath);
-		if (!file.exists()) {
-			return null;
-		}
-		try (FileInputStream input = new FileInputStream(file)) {
-			byte[] data = new byte[(int) file.length()];
-			input.read(data);
-			return new String(data, "UTF-8");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
 		}
 	}
 

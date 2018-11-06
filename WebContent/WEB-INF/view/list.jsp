@@ -5,39 +5,39 @@
 <head>
 <jsp:include page="./share/pagetop.jsp"></jsp:include>
 </head>
-<body>
+<body lang="ko">
 	<div class="container wow fadeIn animated" style="visibility: visible; animation-name: fadeIn;">
 		<jsp:include page="./share/header.jsp"></jsp:include>
 		<main class="mt-5">
 		<div class="container">
 			<div class="list-title">
-				<h1>${list_title}</h1>
+				<h1>${listModel.listTitle}</h1>
 			</div>
 			<section>
-				<input type="hidden" id="category_code" value="${category_code}">
+				<input type="hidden" id="category_code" value="${listModel.categoryCode}">
 				<div class="wow fadeIn" style="text-align: right;">
 					<button type="button" class="btn btn-md btn-primary" id="writePost">Write Post</button>
 				</div>
 				<hr class="mb-3 mt-3">
-				<c:forEach items="${list_item}" var="item">
+				<c:forEach items="${listModel.listItem}" var="item">
 					<!--Grid row-->
 					<div class="row mt-3 wow fadeIn">
 						<div class="col-lg-5 col-xl-4 mb-4">
 							<div class="view overlay rounded z-depth-1">
 								<img src="${item.image}" class="img-fluid summary-image" alt="${item.title}_image"> 
-									<a href="./?category=${category_code}&post=${item.idx}">
+									<a href="./?category=${listModel.categoryCode}&post=${item.idx}">
 									<div class="mask rgba-white-slight"></div>
 								</a>
 							</div>
 						</div>
 						<div class="col-lg-7 col-xl-7 ml-xl-4 mb-4">
 							<h3 class="mb-3 font-weight-bold dark-grey-text">
-								<p class="my-list-title"><a href="./?category=${category_code}&post=${item.idx}">${item.title}</a></p>
+								<p class="my-list-title"><a href="./?category=${listModel.categoryCode}&post=${item.idx}">${item.title}</a></p>
 							</h3>
 							<p class="grey-text my-list-summary">${item.summary}</p>
 							<div style="text-align:right;">
 								<p class="my-list-date">${item.date}</p>
-								<a href="./?category=${category_code}&post=${item.idx}" class="btn btn-primary btn-sm">Go read
+								<a href="./?category=${listModel.categoryCode}&post=${item.idx}" class="btn btn-primary btn-sm">Go read
 									 <i class="fa fa-play ml-2"></i>
 								</a>
 							</div>
@@ -45,7 +45,7 @@
 					</div>
 					<hr class="mb-3 mt-3">
 				</c:forEach>
-				<c:if test="${list_count eq 0}">
+				<c:if test="${listModel.listCount eq 0}">
 					<!--Grid row-->
 					<div class="row wow fadeIn">
 						<!--Grid column-->

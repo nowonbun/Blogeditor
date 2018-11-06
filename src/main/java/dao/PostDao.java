@@ -84,4 +84,15 @@ public class PostDao extends Dao<Post> {
 			}
 		});
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Post> getRecently(int count, int idx) {
+		return transaction((em) -> {
+			String qy = "SELECT p FROM Post p WHERE p.isdeleted = false AND p.idx != :idx ORDER BY p.createdated DESC";
+			Query query = em.createQuery(qy);
+			query.setParameter("idx", idx);
+			query.setMaxResults(count);
+			return (List<Post>) query.getResultList();
+		});
+	}
 }

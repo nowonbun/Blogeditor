@@ -3,6 +3,7 @@ package controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import bean.ListItemBean;
+import bean.PostBean;
 import common.FactoryDao;
 import common.IController;
 import dao.CategoryDao;
@@ -26,79 +29,86 @@ public class Post extends IController {
 
 	@RequestMapping(value = "/index.html")
 	public String index(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
-		super.initMenu(modelmap, req);
-		String categoryCode = "01";
-		String postCode = "-1";
+		PostBean bean = new PostBean();
+		bean.setCategoryCode("01");
+		bean.setPostCode("-1");
 		if (req.getParameter("category") != null) {
-			categoryCode = req.getParameter("category");
+			bean.setCategoryCode(req.getParameter("category"));
 		}
-		Category category = FactoryDao.getDao(CategoryDao.class).getCategory(categoryCode);
+		super.initMenu(modelmap, bean.getCategoryCode(), req);
+		Category category = FactoryDao.getDao(CategoryDao.class).getCategory(bean.getCategoryCode());
 		if (category == null) {
-			categoryCode = "01";
-			category = FactoryDao.getDao(CategoryDao.class).getCategory(categoryCode);
+			bean.setCategoryCode("01");
+			category = FactoryDao.getDao(CategoryDao.class).getCategory(bean.getCategoryCode());
 		}
 		if (req.getParameter("post") != null) {
-			postCode = req.getParameter("post");
+			bean.setPostCode(req.getParameter("post"));
 		}
-		int idx = -1;
+
+		bean.setIdx(-1);
 		try {
-			idx = Integer.parseInt(postCode);
+			bean.setIdx(Integer.parseInt(bean.getPostCode()));
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 		model.Post post = null;
-		if ("01".equals(categoryCode)) {
-			List<model.Post> posts = FactoryDao.getDao(PostDao.class).getPostsByCategory(FactoryDao.getDao(CategoryDao.class).getCategory(categoryCode));
+		if ("01".equals(bean.getCategoryCode())) {
+			List<model.Post> posts = FactoryDao.getDao(PostDao.class).getPostsByCategory(FactoryDao.getDao(CategoryDao.class).getCategory(bean.getCategoryCode()));
 			if (posts.size() > 0) {
 				post = posts.get(0);
 			}
 		} else {
-			post = FactoryDao.getDao(PostDao.class).getPostsByIdx(idx);
+			post = FactoryDao.getDao(PostDao.class).getPostsByIdx(bean.getIdx());
 		}
 		if (post != null) {
-			idx = post.getIdx();
-			modelmap.addAttribute("title", post.getTitle());
-			modelmap.addAttribute("contents", readFile(post.getFilepath()));
-			modelmap.addAttribute("urlkey", post.getGuid());
-			modelmap.addAttribute("priority", post.getPriority());
-			modelmap.addAttribute("changeflag", post.getChangefreg());
-			modelmap.addAttribute("image", new String(post.getImage()));
-			modelmap.addAttribute("summary", post.getSummary().replace("<br>", "\n"));
+			bean.setIdx(post.getIdx());
+			bean.setTitle(post.getTitle());
+			bean.setContents(readFile(post.getFilepath()));
+			bean.setUrlkey(post.getGuid());
+			bean.setPriority(Integer.toString(post.getPriority()));
+			bean.setChangeflag(Integer.toString(post.getChangefreg()));
+			bean.setImage(new String(post.getImage()));
+			bean.setSummary(post.getSummary().replace("<br>", "\n"));
 		} else {
-			idx = -1;
+			bean.setIdx(-1);
 		}
-		if ("01".equals(categoryCode) || idx == -1) {
-			modelmap.addAttribute("isPreNextPostView", false);
+		if ("01".equals(bean.getCategoryCode()) || bean.getIdx() == -1) {
+			bean.setPreNextPostView(false);
 		} else {
-			model.Post pre = FactoryDao.getDao(PostDao.class).getPrePostByIdx(category, idx);
-			model.Post next = FactoryDao.getDao(PostDao.class).getNextPostByIdx(category, idx);
+			model.Post pre = FactoryDao.getDao(PostDao.class).getPrePostByIdx(category, bean.getIdx());
+			model.Post next = FactoryDao.getDao(PostDao.class).getNextPostByIdx(category, bean.getIdx());
 			if (pre != null) {
-				modelmap.addAttribute("isPrePost", true);
-				modelmap.addAttribute("prePostIdx", pre.getIdx());
-				modelmap.addAttribute("prePost", pre.getTitle());
-				modelmap.addAttribute("prePostDate", sdf.format(pre.getCreatedated()));
+				bean.setPrePost(true);
+				bean.setPrePostIdx(pre.getIdx());
+				bean.setPrePost(pre.getTitle());
+				bean.setPrePostDate(sdf.format(pre.getCreatedated()));
 			} else {
-				modelmap.addAttribute("isPrePost", false);
+				bean.setPrePost(false);
 			}
 			if (next != null) {
-				modelmap.addAttribute("isNextPost", true);
-				modelmap.addAttribute("nextPostIdx", next.getIdx());
-				modelmap.addAttribute("nextPost", next.getTitle());
-				modelmap.addAttribute("nextPostDate", sdf.format(next.getCreatedated()));
+				bean.setNextPost(true);
+				bean.setNextPostIdx(next.getIdx());
+				bean.setNextPost(next.getTitle());
+				bean.setNextPostDate(sdf.format(next.getCreatedated()));
 			} else {
-				modelmap.addAttribute("isNextPost", false);
+				bean.setNextPost(false);
 			}
 			if (pre == null && next == null) {
-				modelmap.addAttribute("isPreNextPostView", false);
+				bean.setPreNextPostView(false);
 			} else {
-				modelmap.addAttribute("isPreNextPostView", true);
+				bean.setPreNextPostView(true);
 			}
 		}
-		modelmap.addAttribute("category_code", categoryCode);
-		modelmap.addAttribute("post_code", idx);
-		modelmap.addAttribute("category_name", FactoryDao.getDao(CategoryDao.class).getCategory(categoryCode).getCategoryName());
-
-		modelmap.addAttribute("isViewRecently", !"01".equals(categoryCode));
+		bean.setRecentlyList(new ArrayList<>());
+		for (model.Post item : FactoryDao.getDao(PostDao.class).getRecently(5, bean.getIdx())) {
+			ListItemBean sub = new ListItemBean();
+			sub.setIdx(item.getIdx());
+			sub.setTitle("[" + item.getCategory().getCategoryName() + "] " + item.getTitle());
+			sub.setDate(sdf.format(item.getCreatedated()));
+			bean.getRecentlyList().add(sub);
+		}
+		bean.setViewRecently(bean.getRecentlyList().size() > 0);
+		modelmap.addAttribute("postModel", bean);
 		return "post";
 	}
 

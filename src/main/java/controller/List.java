@@ -11,6 +11,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import bean.ListBean;
+import bean.ListItemBean;
 import common.FactoryDao;
 import common.IController;
 import dao.CategoryDao;
@@ -23,82 +24,58 @@ public class List extends IController {
 	private static final long serialVersionUID = 1L;
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분에 작성된 글...");
 
+	private String setList(ModelMap modelmap, HttpServletRequest req, String categoryCode) {
+		Category category = FactoryDao.getDao(CategoryDao.class).getCategory(categoryCode);
+		super.initMenu(modelmap, categoryCode, req);
+		ListBean bean = new ListBean();
+		bean.setListItem(getListItem(categoryCode));
+		bean.setCategoryCode(categoryCode);
+		bean.setListTitle(category.getCategoryName() + " 리스트");
+		bean.setListCount(bean.getListItem().size());
+		modelmap.addAttribute("listModel", bean);
+		return "list";
+	}
+
 	@RequestMapping(value = "/DialyList.html")
 	protected String dialy(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
-		super.initMenu(modelmap, req);
-		java.util.List<ListBean> list = getListItem("02");
-		modelmap.addAttribute("category_code", "02");
-		modelmap.addAttribute("list_title", "개발 일기 리스트");
-		modelmap.addAttribute("list_item", list);
-		modelmap.addAttribute("list_count", list.size());
-		return "list";
+		return setList(modelmap, req, "02");
 	}
 
 	@RequestMapping(value = "/ExperienceList.html")
 	protected String experience(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
-		super.initMenu(modelmap, req);
-		java.util.List<ListBean> list = getListItem("03");
-		modelmap.addAttribute("category_code", "03");
-		modelmap.addAttribute("list_title", "개발 경험 리스트");
-		modelmap.addAttribute("list_item", list);
-		modelmap.addAttribute("list_count", list.size());
-		return "list";
+		return setList(modelmap, req, "03");
 	}
 
 	@RequestMapping(value = "/KoreanLifeList.html")
 	public String koreanLife(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
-		super.initMenu(modelmap, req);
-		java.util.List<ListBean> list = getListItem("04");
-		modelmap.addAttribute("category_code", "04");
-		modelmap.addAttribute("list_title", "한국 생활 리스트");
-		modelmap.addAttribute("list_item", list);
-		modelmap.addAttribute("list_count", list.size());
-		return "list";
+		return setList(modelmap, req, "04");
 	}
 
 	@RequestMapping(value = "/JapanLifeList.html")
 	public String japanLife(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
-		super.initMenu(modelmap, req);
-		java.util.List<ListBean> list = getListItem("05");
-		modelmap.addAttribute("category_code", "05");
-		modelmap.addAttribute("list_title", "일본 생활 리스트");
-		modelmap.addAttribute("list_item", list);
-		modelmap.addAttribute("list_count", list.size());
-		return "list";
+		return setList(modelmap, req, "05");
 	}
 
-	@RequestMapping(value = "/CodingNodeList.html")
+	@RequestMapping(value = "/CodingNoteList.html")
 	public String codingNode(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
-		super.initMenu(modelmap, req);
-		java.util.List<ListBean> list = getListItem("06");
-		modelmap.addAttribute("category_code", "06");
-		modelmap.addAttribute("list_title", "코딩 노트 리스트");
-		modelmap.addAttribute("list_item", list);
-		modelmap.addAttribute("list_count", list.size());
-		return "list";
+		return setList(modelmap, req, "06");
 	}
 
 	@RequestMapping(value = "/FavoritesList.html")
 	protected String favorites(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
-		super.initMenu(modelmap, req);
-		java.util.List<ListBean> list = getListItem("07");
-		modelmap.addAttribute("category_code", "07");
-		modelmap.addAttribute("list_title", "즐겨 찾기 리스트");
-		modelmap.addAttribute("list_item", list);
-		modelmap.addAttribute("list_count", list.size());
-		return "list";
+		return setList(modelmap, req, "07");
 	}
 
-	private java.util.List<ListBean> getListItem(String categoryCode) {
-		java.util.List<ListBean> ret = new ArrayList<>();
+	private java.util.List<ListItemBean> getListItem(String categoryCode) {
+		java.util.List<ListItemBean> ret = new ArrayList<>();
 		Category category = FactoryDao.getDao(CategoryDao.class).getCategory(categoryCode);
 		java.util.List<model.Post> posts = FactoryDao.getDao(PostDao.class).getPostsByCategory(category);
 		for (model.Post post : posts) {
 			if (post.getIsdeleted()) {
 				continue;
 			}
-			ListBean bean = new ListBean();
-			bean.setIdx(Integer.toString(post.getIdx()));
+			ListItemBean bean = new ListItemBean();
+			bean.setIdx(post.getIdx());
 			bean.setTitle(post.getTitle());
 			bean.setImage(new String(post.getImage()));
 			bean.setSummary(post.getSummary());

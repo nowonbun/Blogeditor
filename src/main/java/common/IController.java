@@ -91,7 +91,7 @@ public abstract class IController extends HttpServlet {
 		return url;
 	}
 
-	protected void initMenu(ModelMap modelmap, HttpServletRequest request) {
+	protected void initMenu(ModelMap modelmap, String code, HttpServletRequest request) {
 		List<CategoryBean> menuitem = new ArrayList<>();
 		java.util.List<Category> list = FactoryDao.getDao(CategoryDao.class).selectAll();
 		list.sort((x, y) -> Integer.compare(x.getSequence(), y.getSequence()));
@@ -106,5 +106,6 @@ public abstract class IController extends HttpServlet {
 			item.setCategoryCode(m.getCategoryCode());
 		}
 		modelmap.addAttribute("menu", menuitem);
+		modelmap.addAttribute("category_code", code);
 	}
 }

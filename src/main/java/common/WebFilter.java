@@ -20,7 +20,6 @@ public class WebFilter implements Filter {
 	public void doFilter(ServletRequest sreq, ServletResponse sres, FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest req = (HttpServletRequest) sreq;
 		HttpServletResponse res = (HttpServletResponse) sres;
-		System.out.println(req.getRequestURI());
 		chain.doFilter(req, res);
 	}
 

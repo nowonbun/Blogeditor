@@ -1,50 +1,43 @@
 package bean;
 
+import java.util.List;
+
 public class ListBean {
-	private String idx;
-	private String title;
-	private String summary;
-	private String image;
-	private String date;
+	private String categoryCode;
+	private String listTitle;
+	private List<ListItemBean> listItem;
+	private int listCount;
 
-	public String getIdx() {
-		return idx;
+	public String getCategoryCode() {
+		return categoryCode;
 	}
 
-	public void setIdx(String idx) {
-		this.idx = idx;
+	public void setCategoryCode(String categoryCode) {
+		this.categoryCode = categoryCode;
 	}
 
-	public String getTitle() {
-		return title;
+	public String getListTitle() {
+		return listTitle;
 	}
 
-	public void setTitle(String title) {
-		this.title = title;
+	public void setListTitle(String listTitle) {
+		this.listTitle = listTitle;
 	}
 
-	public String getSummary() {
-		return summary;
+	public List<ListItemBean> getListItem() {
+		return listItem;
 	}
 
-	public void setSummary(String summary) {
-		this.summary = summary;
+	public void setListItem(List<ListItemBean> listItem) {
+		this.listItem = listItem;
 	}
 
-	public String getImage() {
-		return image;
+	public int getListCount() {
+		return listCount;
 	}
 
-	public void setImage(String image) {
-		this.image = image;
-	}
-
-	public String getDate() {
-		return date;
-	}
-
-	public void setDate(String date) {
-		this.date = date;
+	public void setListCount(int listCount) {
+		this.listCount = listCount;
 	}
 
 }
