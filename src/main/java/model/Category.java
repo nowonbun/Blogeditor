@@ -25,6 +25,8 @@ public class Category implements Serializable {
 
 	private String url;
 
+	private String subdir;
+
 	@OneToMany(mappedBy = "category", targetEntity = Post.class, fetch = FetchType.LAZY)
 	private List<Post> posts;
 
@@ -79,26 +81,34 @@ public class Category implements Serializable {
 		this.url = url;
 	}
 
-	public List<Post> getTsnPosts() {
+	public List<Post> getPosts() {
 		return this.posts;
 	}
 
-	public void setTsnPosts(List<Post> posts) {
+	public void setPosts(List<Post> posts) {
 		this.posts = posts;
 	}
 
-	public Post addTsnPost(Post post) {
-		getTsnPosts().add(post);
+	public Post addPost(Post post) {
+		getPosts().add(post);
 		post.setCategory(this);
 
 		return post;
 	}
 
-	public Post removeTsnPost(Post post) {
-		getTsnPosts().remove(post);
+	public Post removePost(Post post) {
+		getPosts().remove(post);
 		post.setCategory(null);
 
 		return post;
+	}
+
+	public String getSubdir() {
+		return subdir;
+	}
+
+	public void setSubdir(String subdir) {
+		this.subdir = subdir;
 	}
 
 }

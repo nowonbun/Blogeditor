@@ -105,6 +105,7 @@ public class Post extends IController {
 			sub.setIdx(item.getIdx());
 			sub.setTitle("[" + item.getCategory().getCategoryName() + "] " + item.getTitle());
 			sub.setDate(sdf.format(item.getCreatedated()));
+			sub.setCategoryCode(item.getCategory().getCategoryCode());
 			bean.getRecentlyList().add(sub);
 		}
 		bean.setViewRecently(bean.getRecentlyList().size() > 0);

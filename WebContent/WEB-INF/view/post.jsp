@@ -61,7 +61,7 @@
 											<span>Choose</span> <input type="file" id="img_file" accept="image/*" onchange="$('#image').val($(this).val())">
 										</div>
 									</div>
-									<div style="font-size: 7pt;">Size 340(width) * 170(height) and Less than 100,000 byte</div>
+									<div style="font-size: 7pt;">Size 680(width) * 340(height) and Less than 100,000 byte</div>
 								</div>
 								<div class="col-md-12 col-lg-7 mb-2">
 									<div style="text-align: right;">
@@ -112,7 +112,7 @@
 					<li>
 						<div class="row">
 							<div class="col-12 mb-0">
-								<a href="http://localhost:8080/BlogEditer/?category=02&post=${item.idx}">${item.title} </a>
+								<a href="http://localhost:8080/BlogEditer/?category=${item.categoryCode}&post=${item.idx}">${item.title} </a>
 								<p class="my-list-date float-right">${item.date}</p>
 							</div>
 						</div>
@@ -160,7 +160,7 @@
 				$('#summernote').summernote('code', code);
 				$(document).off("change", '.file-field input[type="file"]').on("change", '.file-field input[type="file"]', function() {
 					var file = $("#img_file")[0].files[0];
-					if (file.size > 100000) {
+					if (file.size > 200000) {
 						toastr.error('The image size is exceeded.');
 						return;
 					}

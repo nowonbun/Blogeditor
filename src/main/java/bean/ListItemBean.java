@@ -6,6 +6,7 @@ public class ListItemBean {
 	private String summary;
 	private String image;
 	private String date;
+	private String categoryCode;
 
 	public int getIdx() {
 		return idx;
@@ -45,6 +46,14 @@ public class ListItemBean {
 
 	public void setDate(String date) {
 		this.date = date;
+	}
+
+	public String getCategoryCode() {
+		return categoryCode;
+	}
+
+	public void setCategoryCode(String categoryCode) {
+		this.categoryCode = categoryCode;
 	}
 
 }
