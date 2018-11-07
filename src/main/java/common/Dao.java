@@ -63,6 +63,7 @@ public abstract class Dao<T extends Serializable> {
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction transaction = em.getTransaction();
 		transaction.begin();
+		em.flush();
 		try {
 			V ret = callable.run(em);
 			if (readonly) {
@@ -91,6 +92,7 @@ public abstract class Dao<T extends Serializable> {
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction transaction = em.getTransaction();
 		transaction.begin();
+		em.flush();
 		try {
 			runnable.run(em);
 			if (readonly) {

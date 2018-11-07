@@ -43,6 +43,7 @@ public class PostAjax extends IController {
 			ret.setPriority(JsonConverter.JsonString(obj, "priority"));
 			ret.setImage(new String(JsonConverter.JsonBytes(obj, "image")));
 			ret.setSummary(JsonConverter.JsonString(obj, "summary"));
+			ret.setImageComment(JsonConverter.JsonString(obj, "imageComment"));
 			return ret;
 		});
 		if (Util.StringIsEmptyOrNull(bean.getCategoryCode())) {
@@ -108,6 +109,7 @@ public class PostAjax extends IController {
 		post.setSummary(bean.getSummary());
 		post.setIsdeleted(false);
 		post.setImage(bean.getImage().getBytes());
+		post.setImageComment(bean.getImageComment());
 		FactoryDao.getDao(PostDao.class).create(post);
 
 		AjaxReturn(res, AjaxReturnBean.SUCCESS, "The post is created.", post.getIdx());
@@ -128,6 +130,7 @@ public class PostAjax extends IController {
 			ret.setPriority(JsonConverter.JsonString(obj, "priority"));
 			ret.setImage(new String(JsonConverter.JsonBytes(obj, "image")));
 			ret.setSummary(JsonConverter.JsonString(obj, "summary"));
+			ret.setImageComment(JsonConverter.JsonString(obj, "imageComment"));
 			return ret;
 		});
 
@@ -206,12 +209,12 @@ public class PostAjax extends IController {
 		post.setChangefreg(changeFlag);
 		post.setPriority(priority);
 		post.setLocation(PropertyMap.getInstance().getProperty("config", "web_root") + "/" + bean.getUrlkey() + ".html");
-		post.setCreatedated(new Date());
 		post.setLastUpdated(new Date());
 		post.setGuid(bean.getUrlkey());
 		post.setSummary(bean.getSummary());
 		post.setIsdeleted(false);
 		post.setImage(bean.getImage().getBytes());
+		post.setImageComment(bean.getImageComment());
 		FactoryDao.getDao(PostDao.class).update(post);
 
 		AjaxReturn(res, AjaxReturnBean.SUCCESS, "The post is modified.", post.getIdx());

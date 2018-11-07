@@ -4,10 +4,13 @@
 		<class>model.Category</class>
 		<class>model.Post</class>
 		<properties>
+			<property name="eclipselink.cache.shared.default" value="false"/>
+			<property name="eclipselink.cache.size.default" value="0"/>
+			<property name="eclipselink.cache.type.default" value="None"/>
 			<property name="eclipselink.logging.level" value="INFO" />
 			<property name="eclipselink.logging.parameters" value="true" />
 			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
-			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/blog" />
+			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/blog_dev" />
 			<property name="javax.persistence.jdbc.user" value="root" />
 			<property name="javax.persistence.jdbc.password" value="a12345" />
 		</properties>

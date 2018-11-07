@@ -20,12 +20,14 @@ import common.IController;
 import dao.CategoryDao;
 import dao.PostDao;
 import model.Category;
+import model.Post;
 
 @Controller
-public class Post extends IController {
+public class PostController extends IController {
 
 	private static final long serialVersionUID = 1L;
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분에 작성된 글...");
+	private static final SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분");
 
 	@RequestMapping(value = "/index.html")
 	public String index(ModelMap modelmap, HttpSession session, HttpServletRequest req, HttpServletResponse res) {
@@ -51,9 +53,9 @@ public class Post extends IController {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
-		model.Post post = null;
+		Post post = null;
 		if ("01".equals(bean.getCategoryCode())) {
-			List<model.Post> posts = FactoryDao.getDao(PostDao.class).getPostsByCategory(FactoryDao.getDao(CategoryDao.class).getCategory(bean.getCategoryCode()));
+			List<Post> posts = FactoryDao.getDao(PostDao.class).getPostsByCategory(FactoryDao.getDao(CategoryDao.class).getCategory(bean.getCategoryCode()));
 			if (posts.size() > 0) {
 				post = posts.get(0);
 			}
@@ -69,14 +71,19 @@ public class Post extends IController {
 			bean.setChangeflag(Integer.toString(post.getChangefreg()));
 			bean.setImage(new String(post.getImage()));
 			bean.setSummary(post.getSummary().replace("<br>", "\n"));
+			bean.setImageComment(post.getImageComment());
+			bean.setCreateDate(sdf1.format(post.getCreatedated()));
+			bean.setLastUpdateDate(sdf1.format(post.getLastUpdated()));
 		} else {
 			bean.setIdx(-1);
+			bean.setPriority("5");
+			bean.setChangeflag("5");
 		}
 		if ("01".equals(bean.getCategoryCode()) || bean.getIdx() == -1) {
 			bean.setPreNextPostView(false);
 		} else {
-			model.Post pre = FactoryDao.getDao(PostDao.class).getPrePostByIdx(category, bean.getIdx());
-			model.Post next = FactoryDao.getDao(PostDao.class).getNextPostByIdx(category, bean.getIdx());
+			Post pre = FactoryDao.getDao(PostDao.class).getPrePostByIdx(category, bean.getIdx());
+			Post next = FactoryDao.getDao(PostDao.class).getNextPostByIdx(category, bean.getIdx());
 			if (pre != null) {
 				bean.setPrePost(true);
 				bean.setPrePostIdx(pre.getIdx());
@@ -100,7 +107,7 @@ public class Post extends IController {
 			}
 		}
 		bean.setRecentlyList(new ArrayList<>());
-		for (model.Post item : FactoryDao.getDao(PostDao.class).getRecently(5, bean.getIdx())) {
+		for (Post item : FactoryDao.getDao(PostDao.class).getRecently(5, bean.getIdx())) {
 			ListItemBean sub = new ListItemBean();
 			sub.setIdx(item.getIdx());
 			sub.setTitle("[" + item.getCategory().getCategoryName() + "] " + item.getTitle());

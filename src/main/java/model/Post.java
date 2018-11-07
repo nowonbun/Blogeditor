@@ -26,6 +26,9 @@ public class Post implements Serializable {
 	@Lob
 	private byte[] image;
 
+	@Column(name = "IMAGE_COMMENT")
+	private String imageComment;
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "LAST_UPDATED")
 	private Date lastUpdated;
@@ -149,6 +152,14 @@ public class Post implements Serializable {
 
 	public void setIsdeleted(boolean isdeleted) {
 		this.isdeleted = isdeleted;
+	}
+
+	public String getImageComment() {
+		return imageComment;
+	}
+
+	public void setImageComment(String imageComment) {
+		this.imageComment = imageComment;
 	}
 
 }

@@ -2,6 +2,7 @@ package controller;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,9 +18,10 @@ import common.IController;
 import dao.CategoryDao;
 import dao.PostDao;
 import model.Category;
+import model.Post;
 
 @Controller
-public class List extends IController {
+public class ListController extends IController {
 
 	private static final long serialVersionUID = 1L;
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분에 작성된 글...");
@@ -66,11 +68,11 @@ public class List extends IController {
 		return setList(modelmap, req, "07");
 	}
 
-	private java.util.List<ListItemBean> getListItem(String categoryCode) {
-		java.util.List<ListItemBean> ret = new ArrayList<>();
+	private List<ListItemBean> getListItem(String categoryCode) {
+		List<ListItemBean> ret = new ArrayList<>();
 		Category category = FactoryDao.getDao(CategoryDao.class).getCategory(categoryCode);
-		java.util.List<model.Post> posts = FactoryDao.getDao(PostDao.class).getPostsByCategory(category);
-		for (model.Post post : posts) {
+		List<Post> posts = FactoryDao.getDao(PostDao.class).getPostsByCategory(category);
+		for (Post post : posts) {
 			if (post.getIsdeleted()) {
 				continue;
 			}

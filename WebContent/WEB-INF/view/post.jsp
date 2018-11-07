@@ -30,6 +30,17 @@
 							<h1 class="card-title">
 								<input class="form-control form-control-lg" type="text" id="title" placeholder="제목" value="${postModel.title}">
 							</h1>
+							<div class="row justify-content-end mb-1">
+								<div class="col-2">
+									<img src="./img/copyrightmark.png" style="height:20px">
+								</div>
+								<div class="col-5">
+									<span class="my-list-date">작성일시 : ${postModel.createDate}</span>
+								</div>
+								<div class="col-5">
+									<span class="my-list-date">최종수정일시 : ${postModel.lastUpdateDate}</span>
+								</div>
+							</div>
 							<div class="card-text">
 								<textarea id="summernote">${postModel.contents}</textarea>
 							</div>
@@ -41,12 +52,12 @@
 								</div>
 								<div class="col-4">
 									<div class="md-form">
-										<input type="number" id="changeflag" class="form-control" value="${postModel.changeflag}"> <label for="changefleg">change flag</label>
+										<input type="number" id="changeflag" class="form-control" value="${postModel.changeflag}" min="1" max="9"> <label for="changefleg">change flag</label>
 									</div>
 								</div>
 								<div class="col-4">
 									<div class="md-form">
-										<input type="number" id="priority" class="form-control" value="${postModel.priority}"> <label for="priority">priority</label>
+										<input type="number" id="priority" class="form-control" value="${postModel.priority}" min="1" max="9"> <label for="priority">priority</label>
 									</div>
 								</div>
 							</div>
@@ -62,6 +73,9 @@
 										</div>
 									</div>
 									<div style="font-size: 7pt;">Size 680(width) * 340(height) and Less than 100,000 byte</div>
+									<div class="md-form">
+										<input type="text" id="imageComment" class="form-control" value="${postModel.imageComment}"> <label for="imageComment">Image Comment</label>
+									</div>
 								</div>
 								<div class="col-md-12 col-lg-7 mb-2">
 									<div style="text-align: right;">
@@ -83,7 +97,7 @@
 							<div class="row">
 								<c:if test="${postModel.isPrePost eq true}">
 									<div class="col-12 mb-1">
-										<a href="http://localhost:8080/BlogEditer/?category=02&post=${postModel.prePostIdx}"> <span class="my-pre-next-icon"><i class="fa fa-chevron-up"></i>이전글</span>${postModel.prePost}
+										<a href="./?category=02&post=${postModel.prePostIdx}"> <span class="my-pre-next-icon"><i class="fa fa-chevron-up"></i>이전글</span>${postModel.prePost}
 										</a>
 										<p class="my-list-date float-right">${postModel.prePostDate}</p>
 									</div>
@@ -93,7 +107,7 @@
 								</c:if>
 								<c:if test="${postModel.isNextPost eq true}">
 									<div class="col-12 mt-1">
-										<a href="http://localhost:8080/BlogEditer/?category=02&post=${postModel.nextPostIdx}"><span class="my-pre-next-icon"><i class="fa fa-chevron-down"></i>다음글</span>${postModel.nextPost}</a>
+										<a href="./?category=02&post=${postModel.nextPostIdx}"><span class="my-pre-next-icon"><i class="fa fa-chevron-down"></i>다음글</span>${postModel.nextPost}</a>
 										<p class="my-list-date float-right">${postModel.nextPostDate}</p>
 									</div>
 								</c:if>
@@ -108,16 +122,16 @@
 					<label>최신글</label>
 				</legend>
 				<ul class="pl-3">
-				<c:forEach items="${postModel.recentlyList}" var="item">
-					<li>
-						<div class="row">
-							<div class="col-12 mb-0">
-								<a href="http://localhost:8080/BlogEditer/?category=${item.categoryCode}&post=${item.idx}">${item.title} </a>
-								<p class="my-list-date float-right">${item.date}</p>
+					<c:forEach items="${postModel.recentlyList}" var="item">
+						<li>
+							<div class="row">
+								<div class="col-12 mb-0">
+									<a href="./?category=${item.categoryCode}&post=${item.idx}">${item.title} </a>
+									<p class="my-list-date float-right">${item.date}</p>
+								</div>
 							</div>
-						</div>
-					</li>
-				</c:forEach>
+						</li>
+					</c:forEach>
 				</ul>
 			</fieldset>
 		</c:if>
@@ -245,6 +259,11 @@
 					toastr.error('No empty of summary.');
 					return false;
 				}
+				
+				if ($.trim($("#imageComment").val()) === "") {
+					toastr.error('No empty of Image Comment.');
+					return false;
+				}
 				return true;
 			},
 			getData : function() {
@@ -257,7 +276,8 @@
 					changeflag : $("#changeflag").val(),
 					priority : $("#priority").val(),
 					summary : $("#summaryArea").val().replace(/\n/gi, "<br>"),
-					image : _.image
+					image : _.image,
+					imageComment : $("#imageComment").val()
 				};
 			},
 			notification : function(json) {

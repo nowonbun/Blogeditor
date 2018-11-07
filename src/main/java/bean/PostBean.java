@@ -24,6 +24,9 @@ public class PostBean {
 	private boolean isPreNextPostView;
 	private boolean isViewRecently;
 	private List<ListItemBean> recentlyList;
+	private String imageComment;
+	private String createDate;
+	private String lastUpdateDate;
 
 	public int getIdx() {
 		return this.idx;
@@ -191,6 +194,30 @@ public class PostBean {
 
 	public void setRecentlyList(List<ListItemBean> recentlyList) {
 		this.recentlyList = recentlyList;
+	}
+
+	public String getImageComment() {
+		return imageComment;
+	}
+
+	public void setImageComment(String imageComment) {
+		this.imageComment = imageComment;
+	}
+
+	public String getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(String createDate) {
+		this.createDate = createDate;
+	}
+
+	public String getLastUpdateDate() {
+		return lastUpdateDate;
+	}
+
+	public void setLastUpdateDate(String lastUpdateDate) {
+		this.lastUpdateDate = lastUpdateDate;
 	}
 
 }
