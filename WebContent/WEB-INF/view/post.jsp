@@ -6,7 +6,7 @@
 <jsp:include page="./share/pagetop.jsp"></jsp:include>
 </head>
 <body lang="ko">
-	<div id="bodyMain" class="container wow fadeIn animated" style="visibility: visible; animation-name: fadeIn;" style="min-width: 450px; display:none;">
+	<div id="bodyMain" class="container wow fadeIn animated" style="visibility: visible; animation-name: fadeIn;">
 		<jsp:include page="./share/header.jsp"></jsp:include>
 		<main class="mt-5">
 		<div style="text-align: right">
@@ -27,10 +27,10 @@
 					<div class="card-body">
 						<form id="mainForm">
 							<input type="hidden" id="category_code" value="${postModel.categoryCode}"> <input type="hidden" id="post_code" value="${postModel.idx}">
-							<h1 class="card-title">
+							<h2 class="card-title">
 								<input class="form-control form-control-lg" type="text" id="title" placeholder="제목" value="${postModel.title}">
-							</h1>
-							<div class="row justify-content-end mb-1">
+							</h2>
+							<div class="row justify-content-end mb-3">
 								<div class="col-2">
 									<img src="./img/copyrightmark.png" style="height:20px">
 								</div>
