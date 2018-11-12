@@ -102,7 +102,12 @@ public class PostAjax extends IController {
 		post.setFilepath(filepath);
 		post.setChangefreg(changeFlag);
 		post.setPriority(priority);
-		post.setLocation(post.getCategory().getSubdir() + bean.getUrlkey() + ".html");
+		if (Util.StringEquals("01", bean.getCategoryCode())) {
+			post.setLocation("/index.html");
+		} else {
+			post.setLocation(post.getCategory().getSubdir() + bean.getUrlkey() + ".html");
+		}
+
 		post.setCreatedated(new Date());
 		post.setLastUpdated(new Date());
 		post.setGuid(bean.getUrlkey());
@@ -208,7 +213,11 @@ public class PostAjax extends IController {
 		post.setFilepath(filepath);
 		post.setChangefreg(changeFlag);
 		post.setPriority(priority);
-		post.setLocation(post.getCategory().getSubdir() + bean.getUrlkey() + ".html");
+		if (Util.StringEquals("01", bean.getCategoryCode())) {
+			post.setLocation("/index.html");
+		} else {
+			post.setLocation(post.getCategory().getSubdir() + bean.getUrlkey() + ".html");
+		}
 		post.setLastUpdated(new Date());
 		post.setGuid(bean.getUrlkey());
 		post.setSummary(bean.getSummary());
