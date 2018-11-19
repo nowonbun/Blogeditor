@@ -196,3 +196,7 @@ main {
 .card-text article {
 	color: #000;
 }
+
+body .modal-backdrop.show{
+	display:none;
+}
