@@ -42,7 +42,7 @@
 								</div>
 							</div>
 							<div class="card-text">
-								<textarea id="summernote">${postModel.contents}</textarea>
+								<textarea id="summernote"><c:out value="${postModel.contents}" escapeXml="true" /></textarea>
 							</div>
 							<div class="mt-2 row">
 								<div class="col-4">

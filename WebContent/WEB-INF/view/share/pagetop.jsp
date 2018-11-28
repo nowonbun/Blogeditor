@@ -13,4 +13,6 @@
 <link href="css/summernote.css" rel="stylesheet">
 <link href="css/common.css" rel="stylesheet">
 <link href="css/editor.css" rel="stylesheet">
+<!-- link href="css/rainbow.min.css" rel="stylesheet"-->
+<link href="css/highlight.init.css" rel="stylesheet">
 <link rel="icon" type="./favicon.ico" href="favicon.ico">

@@ -7,3 +7,8 @@
 <!-- <script type="text/javascript" src="js/summernote.min.js"></script>-->
 <script type="text/javascript" src="js/summernote.js"></script>
 <script type="text/javascript" src="js/editor.js"></script>
+<script type="text/javascript" src="js/summernote.js"></script>
+<script type="text/javascript" src="js/editor.js"></script>
+<!-- script type="text/javascript" src="js/highlight.min.js"></script>
+<script type="text/javascript" src="js/highlightjs-line-numbers.js"></script>
+<script type="text/javascript" src="js/highlight.init.js"></script-->
