@@ -148,6 +148,11 @@
 	</div>
 	<jsp:include page="./share/pagebottom.jsp"></jsp:include>
 	<script>
+		var code = $('#summernote').val();
+		$('#summernote').summernote({
+			height : 500
+		});
+		$('#summernote').summernote('code', code);
 		var _ = (function(obj) {
 			$(obj.onLoad);
 			return obj;
@@ -167,11 +172,11 @@
 				if ($.trim($("#imagepanel").prop("src")) !== "") {
 					_.image = $("#imagepanel").prop("src");
 				}
-				var code = $('#summernote').val();
+				/*var code = $('#summernote').val();
 				$('#summernote').summernote({
 					height : 500
 				});
-				$('#summernote').summernote('code', code);
+				$('#summernote').summernote('code', code);*/
 				$(document).off("change", '.file-field input[type="file"]').on("change", '.file-field input[type="file"]', function() {
 					var file = $("#img_file")[0].files[0];
 					if (file.size > 200000) {

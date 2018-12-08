@@ -4392,10 +4392,11 @@
                       $image.attr('data-filename', param);
                   }
                   //$image.css('width', Math.min(_this.$editable.width(), $image.width()));
-                  $image.addClass("article-image img-fluid");
+                  $image.addClass("article-image img-fluid img-contents");
+				  //$image.attr("align","right");
               }
               $image.show();
-              var $div = $("<div></div>").addClass("view overlay rounded z-depth-1 post-image-area");
+              var $div = $("<div></div>");//.addClass("view overlay rounded z-depth-1 post-image-area");
               $div.append($image);
               $div.append($("<div class='mask rgba-white-slight'></div>"));
               //range.create(_this.editable).insertNode($image[0]);
